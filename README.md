@@ -1,0 +1,2 @@
+# StarCraftLikeGame
+Python term project
