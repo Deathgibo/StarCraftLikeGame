@@ -1,0 +1,20 @@
+This is the todo list to achieve by march 26th
+
+. Main menu - Start game, options, exit, image in background
+
+. Map and mini map - display and interaction
+
+. UI - set up skeleton and implement what we can
+
+. Building mechanics - being able to place and build buildings and create entities from them
+
+. Resource collection mechanics - create minerals and gas deposits, control workers and make them collect resources and bring them to base
+
+
+
+Gio - Map and mini map
+
+Karl - UI
+
+Jeffrey - Main menu
+
