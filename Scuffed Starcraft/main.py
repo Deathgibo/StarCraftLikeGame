@@ -30,7 +30,8 @@ class App():
 
         #initialize window
         self._infoObject = pygame.display.Info()
-        self._display_surf = pygame.display.set_mode((800,600), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+        self._display_surfrender = pygame.Surface((1500,1500))
+        self._display_surf = pygame.display.set_mode((800,600), pygame.RESIZABLE)
         self._cwdpath = os.getcwd()
         pygame.display.set_caption("Scuffed StarCraft")
         pygame.display.set_icon(pygame.image.load(os.path.join(self._cwdpath,"Images","sc2.png")))
@@ -60,16 +61,20 @@ class App():
     def load_resources(self):
         #minerals
         self.minerallist = []
-        mineral1 = Mineral.Mineral(100,100,self._mineralimg)
+        mineral1 = Mineral.Mineral(450,450,self._mineralimg)
+        mineral2 = Mineral.Mineral(500,400,self._mineralimg)
+        mineral3 = Mineral.Mineral(600,350,self._mineralimg)
         self.minerallist.append(mineral1)
+        self.minerallist.append(mineral2)
+        self.minerallist.append(mineral3)
 
     def load_entities(self):
         marinesurf = pygame.image.load(os.path.join(self._cwdpath,"Images","marauder.png")).convert()
         scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
-        marinerect = pygame.Rect(0,0,45,45)
-        entity1 = Worker.Worker(15,scvsurf,marinerect)
-        marinerect = pygame.Rect(100,50,45,45)
-        entity2 = Worker.Worker(15,scvsurf,marinerect)
+        marinerect = pygame.Rect(0,0,85,85)
+        entity1 = Worker.Worker(25,scvsurf,marinerect)
+        marinerect = pygame.Rect(100,50,85,85)
+        entity2 = Worker.Worker(25,scvsurf,marinerect)
         self._entitylist = []
         self._entitylist.append(entity1)
         self._entitylist.append(entity2)
@@ -101,7 +106,7 @@ class App():
         self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf)
 
         for units in self._entitylist:
-            units.update(self._input,self.minerallist, self.map)
+            units.update(self._input,self.minerallist, self.map,self._display_surf)
 
         #for units in self._playerinfo._selectedlist:
             #units.handleinput(self)
@@ -123,33 +128,41 @@ class App():
             #self.sound_esketit.play();
 
     def on_render(self):
-        self._display_surf.fill((255,255,255))
+        self._display_surfrender.fill((255,255,255))
 
         #map
-        self.map.render(self._display_surf)
+        self.map.render(self._display_surfrender)
 
-
-        #self.drawimagerect(pygame.Rect(350,200,100,100),self._image_surf)
         #units
         for x in self._entitylist:
             x.render(self)
 
-        #pygame.draw.line(self._display_surf,(0,0,0),(100,100),(200,200))
-        #pygame.draw.circle(self._display_surf, (0,0,255),self.circle[:2], self.circle[2],1)
         #minerals
         for x in self.minerallist:
             x.render(self)
+
+        #transform surface to fit screen size
+        resized_screen = pygame.transform.scale(self._display_surfrender, (self._display_surf.get_width(),self._display_surf.get_height()))
+        self._display_surf.blit(resized_screen, (0, 0))
+
+        #UI
+        #mini map
+        self.map.renderminimap(self._display_surf)
         #green box
         self._playerinfo.render(self._display_surf)
 
         #cursor
         mousesize = 44
-        self.drawimagerect(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
+        self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
           self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
 
-        pygame.display.flip()
+        pygame.display.update()
 
     def drawimagerect(self, rect, image): #renders an image on a rect while preserving original image size
+        newimage = pygame.transform.scale(image,(rect.w,rect.h))
+        self._display_surfrender.blit(newimage,(rect.x,rect.y))
+
+    def drawimagerectgui(self, rect, image):
         newimage = pygame.transform.scale(image,(rect.w,rect.h))
         self._display_surf.blit(newimage,(rect.x,rect.y))
 
@@ -193,7 +206,7 @@ class App():
             pass
 
         elif event.type == VIDEORESIZE: # event.size, event.w, event.h
-            self._display_surf = pygame.display.set_mode(event.size, pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+            self._display_surf = pygame.display.set_mode(event.size, pygame.RESIZABLE)
             pass
 
         elif event.type == KEYUP:
@@ -203,9 +216,9 @@ class App():
             speed = 10
             self._input.keys[event.key] = 1
             if event.key == pygame.K_1:
-                pygame.display.set_mode((800, 600), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+                pygame.display.set_mode((800, 600),  pygame.RESIZABLE)
             if event.key == pygame.K_2:
-                pygame.display.set_mode((1350,750), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+                pygame.display.set_mode((1350,750),  pygame.RESIZABLE)
                 pygame.display.update()
             if event.key == pygame.K_ESCAPE:
                 self.on_exit()

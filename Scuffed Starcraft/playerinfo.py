@@ -15,6 +15,7 @@ class playerinfo():
 
         #unit selection
         self._selectionrect = np.array([0,0,0,0]) #(startingx,startingy,width,height)
+        self._selectionrectrender = np.array([0,0,0,0])
         self._selectedlist = [] #holds entities
         self._firstclick = False
         self._firstclickmini = False
@@ -24,15 +25,19 @@ class playerinfo():
 
     def update(self, input, playerunits, map, displaysurf):
         #handle unit clicking and mouse drag
+        worldcoords = map.windowtoworldtransform(input.mouseposition[0],input.mouseposition[1], displaysurf)
         if input.leftclickframe and map.ispointonminimap(input.mouseposition[0],input.mouseposition[1], displaysurf):
             self._firstclickmini = True
         if input.leftclick and not map.ispointonminimap(input.mouseposition[0],input.mouseposition[1], displaysurf):
             if input.leftclickframe:
-                self._selectionrect = np.array([input.mouseposition[0],input.mouseposition[1],1,1])
+                self._selectionrect = np.array([worldcoords[0],worldcoords[1],1,1])
+                self._selectionrectrender = np.array([input.mouseclickposition[0],input.mouseclickposition[1],1,1])
                 self._firstclick = True
             if self._firstclick == True:
-                self._selectionrect[2] = input.mouseposition[0] - self._selectionrect[0]
-                self._selectionrect[3] = input.mouseposition[1] - self._selectionrect[1]
+                self._selectionrect[2] = worldcoords[0] - self._selectionrect[0]
+                self._selectionrect[3] = worldcoords[1] - self._selectionrect[1]
+                self._selectionrectrender[2] = input.mouseposition[0] - self._selectionrectrender[0]
+                self._selectionrectrender[3] = input.mouseposition[1] - self._selectionrectrender[1]
         if input.leftclickletgo and not self._firstclickmini:
             #reset all to false
             self._firstclick = False
@@ -44,6 +49,7 @@ class playerinfo():
                     unit.selected = True
                     self._selectedlist.append(unit)
             self._selectionrect = (0,0,0,0)
+            self._selectionrectrender = (0,0,0,0)
         if input.leftclickletgo and self._firstclickmini:
             self._firstclickmini = False
         #once we let go call a function to see what units we have
@@ -51,7 +57,7 @@ class playerinfo():
         self.resources = self.resources + 1
     def render(self, surface):
         #render the rect
-        pygame.draw.rect(surface,(0,255,0,4),self._selectionrect, 1)
+        pygame.draw.rect(surface,(0,255,0,4),self._selectionrectrender, 1)
 
 
 class playerinfoLog():

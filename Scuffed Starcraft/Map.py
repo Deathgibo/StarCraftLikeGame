@@ -9,11 +9,11 @@ from pygame.locals import *
 class Map:
     def __init__(self):
         #render stuff
-        self._renderdimensions = np.array([2000,2000])
+        self._renderdimensions = np.array([1500,1500])
         self._mapimage = None #is pygame image so holds dimensions as well
         #camera stuff
         self._cameraposition = np.array([0,0])
-        self._cameraspeed = 8
+        self._cameraspeed = 12
         self._camerazoom = 1.0
 
     def handleinput(self, input, displaysurf, mouseimg, mouseimglist): #returns tuple(mouseimgvalue, mousexoffset,mouseyoffset)
@@ -111,15 +111,25 @@ class Map:
         rectclip = pygame.Rect(self._cameraposition[0],self._cameraposition[1],self._renderdimensions[0] - widthclip,self._renderdimensions[1] - heightclip)
 
         subimage = self._mapimage.subsurface(rectclip)
-        newimage = pygame.transform.scale(subimage,(displaysurf.get_width(),displaysurf.get_height()))
-        displaysurf.blit(newimage,(0,0))
+        #newimage = pygame.transform.scale(subimage,(displaysurf.get_width(),displaysurf.get_height()))
+        displaysurf.blit(subimage,(0,0))
 
-        #mini map
+    def renderminimap(self, displaysurf):
         miniheight = 150
         miniwidth = 150
-
         minimapimg = pygame.transform.scale(self._mapimage,(miniheight,miniwidth))
         displaysurf.blit(minimapimg,(displaysurf.get_width() - miniwidth,displaysurf.get_height() - miniheight))
+
+    def windowtoworldtransform(self, x, y, displaysurf):
+        if (x < 0 or x > displaysurf.get_width()) or (y < 0 or y > displaysurf.get_height()):
+            print("not given window coordinates in Map.py windowtoworldtransform...")
+        xpercent = float(x / displaysurf.get_width())
+        ypercent = float(y / displaysurf.get_height())
+        return (self._cameraposition[0] + (xpercent * self._renderdimensions[0]), self._cameraposition[1] + (ypercent * self._renderdimensions[1]))
+
+    def worldtowindowtransform(self, x, y):
+        pass
+        #subtract cameraposition
 
     def ispointonminimap(self, px, py, displaysurf):
         if px > displaysurf.get_width() - 150 and py > displaysurf.get_height() - 150:

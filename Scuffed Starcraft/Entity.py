@@ -21,10 +21,11 @@ class Entity():
         self.worker = False
         self.mineralpatch = None
         self.holdingmineral = False
+        self.speed = 0
 
-    def update(self, input, minerals, mapinfo):
+    def update(self, input, minerals, mapinfo, displaysurf):
         self.state.update(self)
-        newstate = self.statetrigger(input,self, minerals, mapinfo)
+        newstate = self.statetrigger(input,self, minerals, mapinfo, displaysurf)
         if newstate == None:
             newstate = self.state.handle_input(input,self)
         if newstate != None:
@@ -42,7 +43,7 @@ class Entity():
         color = (0,0,255)
         if self.selected:
             color = (0,255,0)
-        pygame.draw.circle(game._display_surf, color,(int(round(self.circlecenter[0])) - game.map._cameraposition[0],
+        pygame.draw.circle(game._display_surfrender, color,(int(round(self.circlecenter[0])) - game.map._cameraposition[0],
         int(round(self.circlecenter[1])) - game.map._cameraposition[1]), self.radius,1)
 
     def Move(self,x,y):
@@ -54,19 +55,19 @@ class Entity():
     def GetCircleCenter(self):
         return self.circlecenter
 
-    def statetrigger(self, input, unit, minerals, mapinfo):
+    def statetrigger(self, input, unit, minerals, mapinfo, displaysurf):
         if unit.selected:
             if input.keys[pygame.K_s]:
                 return idlestate()
             if input.rightclickframe:
+                worldcoords = mapinfo.windowtoworldtransform(input.mouseclickposition[0],input.mouseclickposition[1], displaysurf)
                 if unit.worker:#check if clicked on a resource
                     for mineral in minerals:
-                        if mathfuncs.mathfuncs.circlecirclecollision((mineral.circlecenter[0],mineral.circlecenter[1],mineral.radius),
-                        (mapinfo._cameraposition[0] + input.mouseclickposition[0],mapinfo._cameraposition[1] + input.mouseclickposition[1],1)):
+                        if mathfuncs.mathfuncs.circlecirclecollision((mineral.circlecenter[0],mineral.circlecenter[1],mineral.radius), (worldcoords[0],worldcoords[1],1)):
                             unit.mineralpatch = mineral
                             return miningstate()
-                unit.movelocation[0] = mapinfo._cameraposition[0] + input.mouseclickposition[0]
-                unit.movelocation[1] = mapinfo._cameraposition[1] + input.mouseclickposition[1]
+                unit.movelocation[0] = worldcoords[0]
+                unit.movelocation[1] = worldcoords[1]
                 return movestate()
         return None
 
@@ -95,24 +96,25 @@ class miningstate(entity_state):
         self.statezero(unit)
     def update(self, unit):
         if self.state == 0:
-            unit.Move(self.dir[0] * 1,self.dir[1] * 1)
+            unit.Move(self.dir[0] * unit.speed,self.dir[1] * unit.speed)
             if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius),
             (unit.mineralpatch.circlecenter[0],unit.mineralpatch.circlecenter[1], unit.mineralpatch.radius)):
                 self.stateone(unit)
 
         if self.state == 1:
             if self.collectingcount >= self.collectingtime:
-                if unit.mineralpatch.mineralcount < 0:
+                if unit.mineralpatch.mineralcount <= 0:
                     return idlestate()
                 unit.mineralpatch.mineralcount = unit.mineralpatch.mineralcount - 1
                 unit.holdingmineral = True
+            if unit.holdingmineral:
                 self.statetwo(unit)
             self.collectingcount = self.collectingcount + 1
 
         if self.state == 2:
-            unit.Move(self.dir[0] * 1,self.dir[1] * 1)
+            unit.Move(self.dir[0] * unit.speed,self.dir[1] * unit.speed)
             if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius),
-            (200,200, 5)):
+            (800,800, 5)):
                 self.statethree(unit)
 
         if self.state == 3:
@@ -132,7 +134,7 @@ class miningstate(entity_state):
         self.collectingtime = 100
     def statetwo(self, unit):
         self.state = 2
-        self.dir = np.array([200 - unit.circlecenter[0], 200 - unit.circlecenter[1]]) #closest base coordinates
+        self.dir = np.array([800 - unit.circlecenter[0], 800 - unit.circlecenter[1]]) #closest base coordinates
         self.dir = self.dir / np.linalg.norm(self.dir)
     def statethree(self, unit):
         self.state = 3
@@ -153,13 +155,13 @@ class idlestate(entity_state):
 
 class movestate(entity_state):
     def __init__(self):
-        self.speed = 1
+        pass
     def entry(self, unit):
         self.dir = np.array([unit.movelocation[0] - unit.circlecenter[0],unit.movelocation[1] - unit.circlecenter[1]])
         self.dir = self.dir / np.linalg.norm(self.dir)
         self.circle = (unit.movelocation[0],unit.movelocation[1],1)
     def update(self, unit):
-        unit.Move(self.dir[0] * self.speed,self.dir[1] * self.speed)
+        unit.Move(self.dir[0] * unit.speed,self.dir[1] * unit.speed)
     def handle_input(self, input, unit):
         #check if it reached destination
         if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius), self.circle):
