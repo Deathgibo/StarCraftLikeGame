@@ -11,6 +11,40 @@ class mathfuncs():
         return math.sqrt(vec[0]**2 + vec[1]**2)
 
     @staticmethod
+    def rectcirclecollision(bx,by,bw,bh,cx,cy, cr):
+        leftx = bx
+        rightx = bx + bw
+        if bw < 0:
+            leftx = bx + bw
+            rightx = bx
+        topy = by
+        bottomy = by + bh
+        if bh < 0:
+            topy = by + bh
+            bottomy = by
+
+        closestx = 0
+        closesty = 0
+        if cx < leftx:
+            closestx = leftx
+        elif cx > rightx:
+            closestx = rightx
+        else:
+            closestx = cx
+
+        if cy > bottomy:
+            closesty = bottomy
+        elif cy < topy:
+            closesty = topy
+        else:
+            closesty = cy
+
+        distance = (cx - closestx, cy - closesty)
+        if(mathfuncs.Magnitude(distance) < cr):
+            return True
+        return False
+
+    @staticmethod
     def circlesegcollision(radius, cx,cy, p1x,p1y,p2x,p2y):   #uses ray to sphere collision
         c = (cx,cy)
         e = (p1x,p1y)

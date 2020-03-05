@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import pygame.mixer
 import os
 import sys
 import math
@@ -8,6 +9,10 @@ import numpy as np
 import Entity
 import input
 import mathfuncs
+import Map
+import Worker
+import playerinfo
+import Mineral
 
 class App():
     def __init__(self):
@@ -17,24 +22,33 @@ class App():
         self._cwdpath = None
 
     def on_init(self):
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
+
         if self.initpygame() is False:
             return False
         self._running = True
 
         #initialize window
+        self._infoObject = pygame.display.Info()
         self._display_surf = pygame.display.set_mode((800,600), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
         self._cwdpath = os.getcwd()
         pygame.display.set_caption("Scuffed StarCraft")
         pygame.display.set_icon(pygame.image.load(os.path.join(self._cwdpath,"Images","sc2.png")))
+        pygame.mouse.set_visible(False)
+        pygame.event.set_grab(True)
 
         #initialize other values
-        self._cameraposition = np.array([0,0])
-        self._camerachange = np.array([0,0])
         self._lasttime = 0
         self._input = input.input()
 
+        self._playerinfo = playerinfo.playerinfo()
+
+        self.map = Map.Map()
+
         self.load_media()
         self.load_entities()
+        self.load_resources()
+
 
     def initpygame(self):
         pygame.init()
@@ -43,48 +57,61 @@ class App():
             print("Error initializing mixer!\n")
             return False
 
+    def load_resources(self):
+        #minerals
+        self.minerallist = []
+        mineral1 = Mineral.Mineral(100,100,self._mineralimg)
+        self.minerallist.append(mineral1)
+
     def load_entities(self):
         marinesurf = pygame.image.load(os.path.join(self._cwdpath,"Images","marauder.png")).convert()
+        scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
         marinerect = pygame.Rect(0,0,45,45)
-        entity1 = Entity.Entity(15, marinesurf,marinerect)
+        entity1 = Worker.Worker(15,scvsurf,marinerect)
+        marinerect = pygame.Rect(100,50,45,45)
+        entity2 = Worker.Worker(15,scvsurf,marinerect)
         self._entitylist = []
         self._entitylist.append(entity1)
+        self._entitylist.append(entity2)
         self.line = [(100,100),(200,200)]
         self.circle = (200,100,20)
         self.pumpcircle = (400,250,80)
 
     def load_media(self): #Load sounds and images
         self._image_surf = pygame.image.load(os.path.join(self._cwdpath,"Images","lilpump.jpg")).convert()
-        self._image_bigmap = pygame.image.load(os.path.join(self._cwdpath,"Images","bigmap3.jpg")).convert()
-        self._image_map = pygame.image.load(os.path.join(self._cwdpath,"Images","map3.jpg")).convert()
+        self._mineralimg = pygame.image.load(os.path.join(self._cwdpath,"Images","mineralt.png")).convert_alpha()
+        self.map._mapimage = pygame.image.load(os.path.join(self._cwdpath,"Images","bigmap3.jpg")).convert()
+        self._mouseimg1 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse1t.png")).convert_alpha()
+        self._mouseimg2 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse2t.png")).convert_alpha()
+        self._mouseimg3 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse3t.png")).convert_alpha()
+        self._mouseimg4 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse4t.png")).convert_alpha()
+        self._mouseimg5 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse5t.png")).convert_alpha()
+        self._mouseimgoffset = np.array([10,10])
+        self._mouseimglist = [self._mouseimg1,self._mouseimg2,self._mouseimg3,self._mouseimg4,self._mouseimg5]
+        self._mouseimgcurrent = self._mouseimg1
         self.sound_esketit = pygame.mixer.Sound(os.path.join(self._cwdpath,"Sounds","esketit.wav"))
 
     def on_update(self):
-        cameraspeed = 6
-        if pygame.mouse.get_pos()[0] < 50:
-            self._cameraposition[0] = self._cameraposition[0] - cameraspeed
-        if pygame.mouse.get_pos()[0] > self._display_surf.get_width() - 50:
-            self._cameraposition[0] = self._cameraposition[0] + cameraspeed
-        if pygame.mouse.get_pos()[1] < 50:
-            self._cameraposition[1] = self._cameraposition[1] - cameraspeed
-        if pygame.mouse.get_pos()[1] > self._display_surf.get_height() - 50:
-            self._cameraposition[1] = self._cameraposition[1] + cameraspeed
+        #update map and mouse information
+        mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist)
+        self._mouseimgcurrent = self._mouseimglist[mouseinfo[0]]
+        self._mouseimgoffset[0] = mouseinfo[1]
+        self._mouseimgoffset[1] = mouseinfo[2]
 
-        if self._cameraposition[0] < 0:
-            self._cameraposition[0] = 0
-        if self._cameraposition[0] > self._image_bigmap.get_width():
-            self._cameraposition[0] = self._image_bigmap.get_width()
-        if self._cameraposition[1] < 0:
-            self._cameraposition[1] = 0
-        if self._cameraposition[1] > self._image_bigmap.get_height():
-            self._cameraposition[1] = self._image_bigmap.get_height()
+        self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf)
 
-        answer = mathfuncs.mathfuncs.circlesegcollision(self._entitylist[0].radius,self._entitylist[0].x,self._entitylist[0].y,
+        for units in self._entitylist:
+            units.update(self._input,self.minerallist, self.map)
+
+        #for units in self._playerinfo._selectedlist:
+            #units.handleinput(self)
+
+        answer = mathfuncs.mathfuncs.circlesegcollision(self._entitylist[0].radius,self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1],
         self.line[0][0],self.line[0][1],self.line[1][0],self.line[1][1])
-        answer2 = mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].x,self._entitylist[0].y,
+        answer2 = mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1],
          self._entitylist[0].radius), self.circle)
         #print("Line collision: %d Circle collision: %d" % (answer, answer2))
-        if mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].x,self._entitylist[0].y, self._entitylist[0].radius), self.pumpcircle):
+        if mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1], self._entitylist[0].radius), self.pumpcircle):
             self.sound_esketit.set_volume(.05)
             self.sound_esketit.play();
 
@@ -97,26 +124,28 @@ class App():
 
     def on_render(self):
         self._display_surf.fill((255,255,255))
-        #self.drawimagerect(pygame.Rect(0,0,self._display_surf.get_width(),self._display_surf.get_height()),self._image_map)
-        widthsub = 0
-        if self._cameraposition[0] + self._display_surf.get_width() > self._image_bigmap.get_width():
-            widthsub = self._cameraposition[0] + self._display_surf.get_width() - self._image_bigmap.get_width()
-        heightsub = 0
-        if self._cameraposition[1] + self._display_surf.get_height() > self._image_bigmap.get_height():
-            heightsub = self._cameraposition[1] + self._display_surf.get_height() - self._image_bigmap.get_height()
 
-        rectclip = pygame.Rect(self._cameraposition[0],self._cameraposition[1],self._display_surf.get_width() - widthsub,self._display_surf.get_height() - heightsub)
-        #self._image_bigmap.set_clip(rectclip)
-        #print(rectclip)
-        subimage = self._image_bigmap.subsurface(rectclip)
-        #newimage = pygame.transform.scale(subimage,(800,600))
-        self._display_surf.blit(subimage,(0,0))
-        self.drawimagerect(pygame.Rect(350,200,100,100),self._image_surf)
+        #map
+        self.map.render(self._display_surf)
+
+
+        #self.drawimagerect(pygame.Rect(350,200,100,100),self._image_surf)
+        #units
         for x in self._entitylist:
-            self.drawimagerect(x.rect,x.img)
-            pygame.draw.circle(self._display_surf, (0,255,0),(x.x,x.y), x.radius,1)
-        pygame.draw.line(self._display_surf,(0,0,0),(100,100),(200,200))
-        pygame.draw.circle(self._display_surf, (0,0,255),self.circle[:2], self.circle[2],1)
+            x.render(self)
+
+        #pygame.draw.line(self._display_surf,(0,0,0),(100,100),(200,200))
+        #pygame.draw.circle(self._display_surf, (0,0,255),self.circle[:2], self.circle[2],1)
+        #minerals
+        for x in self.minerallist:
+            x.render(self)
+        #green box
+        self._playerinfo.render(self._display_surf)
+
+        #cursor
+        mousesize = 44
+        self.drawimagerect(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
+          self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
 
         pygame.display.flip()
 
@@ -136,6 +165,7 @@ class App():
             self._running = False
         pygame.time.get_ticks()
         while( self._running ):
+            self._input.reset()
             for event in pygame.event.get():
                 self.on_event(event)
             self.on_update()
@@ -172,14 +202,11 @@ class App():
         elif event.type == KEYDOWN: #event.key (pygame.K_x) event.mod == pygame.KMOD_LSHIFT
             speed = 10
             self._input.keys[event.key] = 1
-            if event.key == pygame.K_w:
-                self._entitylist[0].Move(0,-speed)
-            if event.key == pygame.K_a:
-                self._entitylist[0].Move(-speed,0)
-            if event.key == pygame.K_s:
-                self._entitylist[0].Move(0,speed)
-            if event.key == pygame.K_d:
-                self._entitylist[0].Move(speed,0)
+            if event.key == pygame.K_1:
+                pygame.display.set_mode((800, 600), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+            if event.key == pygame.K_2:
+                pygame.display.set_mode((1350,750), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+                pygame.display.update()
             if event.key == pygame.K_ESCAPE:
                 self.on_exit()
 
@@ -190,6 +217,7 @@ class App():
         elif event.type == MOUSEBUTTONUP: #event.button, #event.pos
             if event.button == 1:
                 self._input.leftclick = False
+                self._input.leftclickletgo = True
             elif event.button == 2:
                 pass
             elif event.button == 3:
@@ -198,10 +226,18 @@ class App():
         elif event.type == MOUSEBUTTONDOWN: #event.button, #event.pos
             if event.button == 1: #l
                 self._input.leftclick = True
+                self._input.leftclickframe = True
+                self._input.mouseclickposition = event.pos
             elif event.button == 2: #m
                 pass
             elif event.button == 3: #r
-                self._input.right = True
+                self._input.rightclick = True
+                self._input.rightclickframe = True
+                self._input.mouseclickposition = event.pos
+            elif event.button == 4: #r
+                self._input.mousewheel = 1
+            elif event.button == 5: #r
+                self._input.mousewheel = -1
 
         elif event.type == ACTIVEEVENT:
             if event.state == 1:
