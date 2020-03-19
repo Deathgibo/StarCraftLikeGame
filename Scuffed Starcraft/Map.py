@@ -114,11 +114,28 @@ class Map:
         #newimage = pygame.transform.scale(subimage,(displaysurf.get_width(),displaysurf.get_height()))
         displaysurf.blit(subimage,(0,0))
 
+    #ORIGINAL
+    # def renderminimap(self, displaysurf):
+    #     miniheight = 150
+    #     miniwidth = 150
+    #     minimapimg = pygame.transform.scale(self._mapimage,(miniheight,miniwidth))
+    #     displaysurf.blit(minimapimg,(displaysurf.get_width() - miniwidth,displaysurf.get_height() - miniheight))
+
     def renderminimap(self, displaysurf):
-        miniheight = 150
-        miniwidth = 150
-        minimapimg = pygame.transform.scale(self._mapimage,(miniheight,miniwidth))
-        displaysurf.blit(minimapimg,(displaysurf.get_width() - miniwidth,displaysurf.get_height() - miniheight))
+        #Set-up Minimap dimensions based on screen size
+        if displaysurf.get_rect().size == (800,600):
+            #Minimap dimensions for 800x600 
+            miniheight = 150
+            miniwidth = 105
+            minimapimg = pygame.transform.scale(self._mapimage,(miniwidth,miniheight))
+            displaysurf.blit(minimapimg,(13, displaysurf.get_height() - miniheight - 10, miniwidth, miniheight))
+
+        elif displaysurf.get_rect().size == (1350,750):
+            #Minimap dimensions for 1350x750 
+            miniheight = 180
+            miniwidth = 180
+            minimapimg = pygame.transform.scale(self._mapimage,(miniwidth,miniheight))
+            displaysurf.blit(minimapimg, (22, displaysurf.get_height() - miniheight - 12, miniwidth, miniheight))
 
     def windowtoworldtransform(self, x, y, displaysurf):
         if (x < 0 or x > displaysurf.get_width()) or (y < 0 or y > displaysurf.get_height()):

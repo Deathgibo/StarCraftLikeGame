@@ -1,8 +1,8 @@
-import pygame
-from pygame.locals import *
+import pygame                   #init(), display()
+from pygame.locals import *     #QUIT, USEREVENT, ect.
 import pygame.mixer
-import os
-import sys
+import os                       #getcwd(), os.environ
+import sys                      #version()
 import math
 import numpy as np
 
@@ -13,45 +13,64 @@ import Map
 import Worker
 import playerinfo
 import Mineral
+import Overlay
 
 class App():
     def __init__(self):
         self._running = True
-        self._display_surf = None
-        self._image_surf = None
-        self._cwdpath = None
+        self._display_surf = None       #UI Surface/Foreground/Display Window (800x600)
+        self._display_surfrender = None #Background/Map
+        self._image_surf = None         #??
+        self._cwdpath = None            #Get working directory to retrieve images 
 
     def on_init(self):
+        #(from: on_execute)
+        #Puts pygame window in the middle
         os.environ['SDL_VIDEO_CENTERED'] = '1'
 
+        #Check that Mixer was initiated. on_execute will fail/stop the program otherwise.
         if self.initpygame() is False:
             return False
-        self._running = True
 
-        #initialize window
+        #Initialize Game Window
+        # (Not Used Yet!) Video Display Object: If called before pygame.display.set_mode() can provide user's screen resolution
         self._infoObject = pygame.display.Info()
+        # Map Image in Background (Needs to be rendered)
         self._display_surfrender = pygame.Surface((1500,1500))
+        # Window Size
         self._display_surf = pygame.display.set_mode((800,600), pygame.RESIZABLE)
+        # CWD path for images
         self._cwdpath = os.getcwd()
         pygame.display.set_caption("Scuffed StarCraft")
         pygame.display.set_icon(pygame.image.load(os.path.join(self._cwdpath,"Images","sc2.png")))
         pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
 
-        #initialize other values
+        #Initialize FPS value (see .handlefps())
         self._lasttime = 0
-        self._input = input.input()
 
+        self._input = input.input()
         self._playerinfo = playerinfo.playerinfo()
 
+        #Initialize Map Dimensions and Camera Set-Up
         self.map = Map.Map()
 
+        #Initialize Overlay (UI)
+        self.overlay = Overlay.Overlay()
+
+        #Initialize Cursor/Map/Sounds and other general media
         self.load_media()
+
+        #Initialize Troops and smaller entities
         self.load_entities()
+
+        #Initialize Map resources
         self.load_resources()
 
 
     def initpygame(self):
+        #(from: on_execute-> on_init)
+        #Check that Mixer was initiated. on_execute will fail/stop the program otherwise.
         pygame.init()
         pygame.mixer.init()
         if pygame.mixer.get_init() is None:
@@ -82,10 +101,16 @@ class App():
         self.circle = (200,100,20)
         self.pumpcircle = (400,250,80)
 
-    def load_media(self): #Load sounds and images
+    def load_media(self):
+        #(from: on_execute-> on_init)
+        #Load general sounds and images
         self._image_surf = pygame.image.load(os.path.join(self._cwdpath,"Images","lilpump.jpg")).convert()
         self._mineralimg = pygame.image.load(os.path.join(self._cwdpath,"Images","mineralt.png")).convert_alpha()
+
+        #Background Map (stored in map object)
         self.map._mapimage = pygame.image.load(os.path.join(self._cwdpath,"Images","bigmap3.jpg")).convert()
+
+        #Directional Green Cursor
         self._mouseimg1 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse1t.png")).convert_alpha()
         self._mouseimg2 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse2t.png")).convert_alpha()
         self._mouseimg3 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse3t.png")).convert_alpha()
@@ -95,6 +120,9 @@ class App():
         self._mouseimglist = [self._mouseimg1,self._mouseimg2,self._mouseimg3,self._mouseimg4,self._mouseimg5]
         self._mouseimgcurrent = self._mouseimg1
         self.sound_esketit = pygame.mixer.Sound(os.path.join(self._cwdpath,"Sounds","esketit.wav"))
+
+        #Overlay
+        self.overlay.overlayimage = pygame.image.load(os.path.join(self._cwdpath,"Images/Overlay","CleanBottomOverlay.png")).convert_alpha()
 
     def on_update(self):
         #update map and mouse information
@@ -128,9 +156,9 @@ class App():
             #self.sound_esketit.play();
 
     def on_render(self):
-        self._display_surfrender.fill((255,255,255))
+        #(from: on_execute)
 
-        #map
+        #map (set up camera dimensions on map to avoid going out of bounds)
         self.map.render(self._display_surfrender)
 
         #units
@@ -141,11 +169,17 @@ class App():
         for x in self.minerallist:
             x.render(self)
 
-        #transform surface to fit screen size
+        #map cont. - render map to fit window size
+        # MUST BE AFTER rendering units and minerals or they will not appear!
         resized_screen = pygame.transform.scale(self._display_surfrender, (self._display_surf.get_width(),self._display_surf.get_height()))
         self._display_surf.blit(resized_screen, (0, 0))
 
-        #UI
+        #UI - ORDER MATTERS!
+        #bottom Overlay
+        self.overlay.render(self._display_surf)
+
+        self.overlay.renderGameClock(self._display_surf)
+     
         #mini map
         self.map.renderminimap(self._display_surf)
         #green box
@@ -170,13 +204,18 @@ class App():
         self._running = False
 
     def on_cleanup(self):
+        #(from: on_execute)
+        #Quit Mixer and PyGames
         pygame.quit()
         pygame.mixer.quit()
 
     def on_execute(self):
+        #Initialize the window, camera, media and other entities. Return false if
+        #there is an error on initiating Mixer.
         if self.on_init() == False:
             self._running = False
-        pygame.time.get_ticks()
+
+        #Main Game Running
         while( self._running ):
             self._input.reset()
             for event in pygame.event.get():
@@ -184,9 +223,13 @@ class App():
             self.on_update()
             self.on_render()
             self.handlefps()
+
+        #Quit Mixer and PyGames
         self.on_cleanup()
 
     def handlefps(self):
+        #(from: on_execute)
+        #Display user's FPS in upper right-hand corner of the screen
         frametime = pygame.time.get_ticks() - self._lasttime
         if frametime != 0:
             fps = 1000 / frametime #1000 miliseconds = 1 second, so
@@ -195,7 +238,11 @@ class App():
                 pygame.time.delay(17 - frametime)
         self._lasttime = pygame.time.get_ticks()
 
-    def on_event(self, event): #INPUT HANDLING FUNCTION
+    def on_event(self, event): 
+        #(from: on_execute)
+
+        #INPUT HANDLING FUNCTION
+        #Change _running to false to get out of infinite loop and exit program
         if event.type == QUIT:
             self.on_exit()
 

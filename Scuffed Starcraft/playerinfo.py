@@ -12,6 +12,7 @@ class playerinfo():
     def __init__(self):
         self.resources = 5
         self.supply = 0
+        self.population = 0
 
         #unit selection
         self._selectionrect = np.array([0,0,0,0]) #(startingx,startingy,width,height)
@@ -64,6 +65,7 @@ class playerinfoLog():
     def __init__(self):
         self.resources = 5
         self.supply = 0
+        self.population = 0
         print("initialized")
 
     def giveresources(self, resource):
