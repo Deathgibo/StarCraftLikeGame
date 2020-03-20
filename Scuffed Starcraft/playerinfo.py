@@ -3,10 +3,9 @@ import numpy as np
 import time
 import mathfuncs
 
-##Playerinfo = playerinfoLog()
-##playerinfolocator.provide(Playerinfo)
-##Playerinfo.giveresources(20)
-##playerinfolocator.getplayerinfo().resources
+#This class contains player information like resources, units selected,etc.
+#So if you need playerinfo in main its called self.__playerinfo, can just
+#pass that to other functions
 
 class playerinfo():
     def __init__(self):
@@ -105,6 +104,14 @@ class playerinfo():
         #render the rect
         pygame.draw.rect(surface,(0,255,0,4),self._selectionrectrender, 1)
 
+
+
+##These classes under probably won't be used
+
+##Playerinfo = playerinfoLog()
+##playerinfolocator.provide(Playerinfo)
+##Playerinfo.giveresources(20)
+##playerinfolocator.getplayerinfo().resources
 
 class playerinfoLog():
     def __init__(self):

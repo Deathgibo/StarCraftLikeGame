@@ -73,8 +73,9 @@ class Map:
         if self.ispointonminimap(input.mouseclickposition[0],input.mouseclickposition[1], displaysurf):
             if input.leftclick == True:
                 #get percent and move percent
-                xpercent = float((input.mouseposition[0] - (displaysurf.get_width() - 150.0)) / 150.0)
-                ypercent = float((input.mouseposition[1] - (displaysurf.get_height() - 150.0)) / 150.0)
+                #x (13,118)
+                xpercent = float((input.mouseposition[0] - 13) / 105.0)#MINI
+                ypercent = float((input.mouseposition[1] - (displaysurf.get_height() - 150.0)) / 150.0)#MINI
                 self._cameraposition[0] = int(self._mapimage.get_width() * xpercent) - (self._renderdimensions[0]/2)
                 self._cameraposition[1] = int(self._mapimage.get_height() * ypercent) - (self._renderdimensions[1]/2)
 
@@ -124,14 +125,14 @@ class Map:
     def renderminimap(self, displaysurf):
         #Set-up Minimap dimensions based on screen size
         if displaysurf.get_rect().size == (800,600):
-            #Minimap dimensions for 800x600 
+            #Minimap dimensions for 800x600
             miniheight = 150
             miniwidth = 105
             minimapimg = pygame.transform.scale(self._mapimage,(miniwidth,miniheight))
             displaysurf.blit(minimapimg,(13, displaysurf.get_height() - miniheight - 10, miniwidth, miniheight))
 
         elif displaysurf.get_rect().size == (1350,750):
-            #Minimap dimensions for 1350x750 
+            #Minimap dimensions for 1350x750
             miniheight = 180
             miniwidth = 180
             minimapimg = pygame.transform.scale(self._mapimage,(miniwidth,miniheight))
@@ -148,7 +149,7 @@ class Map:
         pass
         #subtract cameraposition
 
-    def ispointonminimap(self, px, py, displaysurf):
-        if px > displaysurf.get_width() - 150 and py > displaysurf.get_height() - 150:
+    def ispointonminimap(self, px, py, displaysurf):#MINI
+        if px > 12 and px < 105 + 13 and py > displaysurf.get_height() - 150 - 10:
             return True
         return False

@@ -2,8 +2,18 @@ import pygame
 from pygame.locals import *
 import numpy as np
 import time
-
 import mathfuncs
+
+""" Entity Class
+
+The entities work on a state machine, they have states like move, attack, dead.
+If you need to play a sound when unit dies for example look at the deadstate class,
+and the sound could be played on the onentry function. Theres function trigger which globally
+switched state like if user presses S it stops no matter what state.
+If you want to make a new unit create a class and inherit this, check the marine class for example,
+theres certain attributes you need to override like health, attack damage.
+
+"""
 
 class Entity():
     def __init__(self, rad,imgsurf, pyrect):
@@ -75,7 +85,6 @@ class Entity():
         rectangle = pygame.Rect(int(round(self.healthrect[0])) - game.map._cameraposition[0], int(round(self.healthrect[1])) - game.map._cameraposition[1],
         int(round(self.healthrect[2])), int(round(self.healthrect[3])))
         pygame.draw.rect(game._display_surfrender,(50,50,50),rectangle)
-
         if self.health <= 0:
             percent = 0
         else:
@@ -97,7 +106,9 @@ class Entity():
             return True
         return False
 
-    """def Push(self, x,y, enemyunits, units, pushedby):
+    """
+    #Experiment function for unit collision
+    def Push(self, x,y, enemyunits, units, pushedby):
         #cant bump back unit and only has 1 call to move
         if enemyunits != None and units != None:
             for unit in units:
@@ -122,6 +133,7 @@ class Entity():
                         pass
                         #enemy.Push(-5,0)
         self.Move(x,y)"""
+
     def Move(self,x,y, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None, z = None):
         #if unit moved check physics
         if enemyunits != None and units != None:

@@ -26,8 +26,7 @@ class App():
         self._running = True
         self._display_surf = None       #UI Surface/Foreground/Display Window (800x600)
         self._display_surfrender = None #Background/Map
-        self._image_surf = None         #??
-        self._cwdpath = None            #Get working directory to retrieve images 
+        self._cwdpath = None            #Get working directory to retrieve images
 
     def on_init(self):
         #(from: on_execute)
@@ -43,7 +42,6 @@ class App():
         #initialize window
         self._infoObject = pygame.display.Info()
         # Map Image in Background (Needs to be rendered)
-        self._display_surfrender = pygame.Surface((1500,1500))
         # Window Size
         self._display_surfrender = pygame.Surface((800,600))#Map
         self._display_surf = pygame.display.set_mode((800,600), pygame.RESIZABLE)
@@ -51,7 +49,7 @@ class App():
         self._cwdpath = os.getcwd()
         pygame.display.set_caption("Scuffed StarCraft")
         pygame.display.set_icon(pygame.image.load(os.path.join(self._cwdpath,"Images","sc2.png")))
-        pygame.mouse.set_visible(False)
+        #Ignore cursor for now need to figure out a way to do it on the OS probably because it lags
         #pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
 
@@ -105,10 +103,12 @@ class App():
         self.minerallist.append(mineral3)
 
     def load_entities(self):
+        #Load entity images
         maraudersurf = pygame.image.load(os.path.join(self._cwdpath,"Images","maraudert.png")).convert_alpha()
         scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
         marinesurf = pygame.image.load(os.path.join(self._cwdpath,"Images","marine.png")).convert_alpha()
 
+        #Create units and enemies and set up data structures
         marinerect = pygame.Rect(700,300,45,45)
         worker1 = Worker.Worker(15,scvsurf,marinerect)
         marinerect = pygame.Rect(700,350,45,45)
@@ -117,31 +117,32 @@ class App():
         self._entitylist.append(worker1)
         self._entitylist.append(worker2)
         thesize = 30
+        #Fill entity List structure
         for x in range(0,thesize):
             marinerect = pygame.Rect(100,300 + x*30,50,50)
             entity1 = Marine.Marine(15,marinesurf,marinerect)
             self._entitylist.append(entity1)
+
+        #Initialize and fill the entity QuadTree
         self._entityquadtree = Quadtree.Quadtree()
         for x in range(0,len(self._entitylist)):
             self._entityquadtree.insertstart(self._entitylist[x])
-        #self._entityquadtree.print()
+
+        #Fill enemy List structure
         self._enemyentitylist = []
         for x in range(0,thesize):
             marinerect = pygame.Rect(400,150 + x*30,50,50)
             entity1 = Marauder.Marauder(15,maraudersurf,marinerect)
             self._enemyentitylist.append(entity1)
+
+        #Initialize and fill the enemy QuadTree
         self._enemyentityquadtree = Quadtree.Quadtree()
         for x in range(0,len(self._enemyentitylist)):
             self._enemyentityquadtree.insertstart(self._enemyentitylist[x])
 
-        self.line = [(100,100),(200,200)]
-        self.circle = (200,100,20)
-        self.pumpcircle = (400,250,80)
-
     def load_media(self):
         #(from: on_execute-> on_init)
         #Load general sounds and images
-        self._image_surf = pygame.image.load(os.path.join(self._cwdpath,"Images","lilpump.jpg")).convert()
         self._mineralimg = pygame.image.load(os.path.join(self._cwdpath,"Images","mineralt.png")).convert_alpha()
 
         #Background Map (stored in map object)
@@ -165,17 +166,21 @@ class App():
     def on_update(self):
         #update input
         self._input.update()
+
         #update map and mouse information
         mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist)
         self._mouseimgcurrent = self._mouseimglist[mouseinfo[0]]
         self._mouseimgoffset[0] = mouseinfo[1]
         self._mouseimgoffset[1] = mouseinfo[2]
 
+        #update playerinformation
         self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf, self._building_list,self._enemyentitylist,
                                 self._entityquadtree,self._enemyentityquadtree)
 
 
-        """frametime = time.time()
+        """
+        quad tree update iterate implementation (slower)
+        frametime = time.time()
         for unit in self._entitylist:
             pass
         print(time.time() - frametime)
@@ -189,6 +194,7 @@ class App():
         #units
         for units in self._entitylist:
             units.update(self._input,self.minerallist, self.map,self._display_surf, self._enemyentitylist, self._entitylist, self._enemyentityquadtree, self._entityquadtree)
+
         #remove dead units
         count = 0
         for x in range(0,len(self._entitylist)):
@@ -196,9 +202,11 @@ class App():
                 self._entityquadtree.deletestart(self._entitylist[x - count])
                 self._entitylist.pop(x - count)
                 count = count + 1
+
         #enemy units
         for units in self._enemyentitylist:
             units.update(self._input,self.minerallist, self.map,self._display_surf, self._entitylist, self._enemyentitylist, self._entityquadtree, self._enemyentityquadtree)
+
         #remove dead enemy units
         count = 0
         for x in range(0,len(self._enemyentitylist)):
@@ -213,15 +221,27 @@ class App():
             buildings.update(self._input)
 
 
-        #if not pygame.mixer.music.get_busy():
-        #    pygame.mixer.music.load(os.path.join(self._cwdpath,"Sounds","100 on my wrist.wav"))
-        #    pygame.mixer.music.set_volume(0.5)
-        #    pygame.mixer.music.play()
-            #self.sound_esketit.set_volume(.05)
-            #self.sound_esketit.play();
+        """
+        just here to remember sound syntax
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load(os.path.join(self._cwdpath,"Sounds","100 on my wrist.wav"))
+            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.play()
+            self.sound_esketit.set_volume(.05)
+            self.sound_esketit.play();
+        """
 
     def on_render(self):
         #(from: on_execute)
+
+        """ About Render
+        Pretty much we have an x by y resolution image, self._display_surfrender, this
+        is the resolution of the world we render and can change. This is where you render the "world" on.
+        So thats everything in the world like, minerals, units, buildings, etc. Then
+        Once the resolution image is filled you remap it to the screen size, resized_screen. After that
+        you can do UI stuff because it would be weird to remap the UI when it just
+        needs to spread over the screen size.
+        """
 
         #map (set up camera dimensions on map to avoid going out of bounds)
         self.map.render(self._display_surfrender)
@@ -230,6 +250,7 @@ class App():
         for x in self._entitylist:
             x.render(self)
 
+        #enemy units
         for x in self._enemyentitylist:
             x.render(self)
 
@@ -252,17 +273,18 @@ class App():
         self.overlay.render(self._display_surf)
 
         self.overlay.renderGameClock(self._display_surf)
-     
+
         #UI
         #mini map
         self.map.renderminimap(self._display_surf)
         #green box
         self._playerinfo.render(self._display_surf)
 
-        #cursor
+        #cursor - Ignore cursor for now need to figure out a way to do it on the OS probably because it lags
         mousesize = 44
-        self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
-          self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
+        #self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
+          #self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
+
         #self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
           #self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
 
@@ -314,12 +336,11 @@ class App():
                 pygame.time.delay(17 - frametime)
         self._lasttime = pygame.time.get_ticks()
 
-    def on_event(self, event): 
+    def on_event(self, event):
         #(from: on_execute)
 
         #INPUT HANDLING FUNCTION
         #Change _running to false to get out of infinite loop and exit program
-    def on_event(self, event): #INPUT HANDLING FUNCTION
         if event.type == QUIT:
             self.on_exit()
 
