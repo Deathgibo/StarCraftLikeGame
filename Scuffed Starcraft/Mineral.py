@@ -3,8 +3,8 @@ import pygame
 
 class Mineral():
     def __init__(self, x, y, imgsurf):
-        xdimension = 150
-        ydimension = 150
+        xdimension = 75
+        ydimension = 75
         #render
         self.rect = pygame.Rect(x,y,xdimension,ydimension)
         self.img = imgsurf

@@ -9,7 +9,7 @@ from pygame.locals import *
 class Map:
     def __init__(self):
         #render stuff
-        self._renderdimensions = np.array([1500,1500])
+        self._renderdimensions = np.array([800,600])
         self._mapimage = None #is pygame image so holds dimensions as well
         #camera stuff
         self._cameraposition = np.array([0,0])

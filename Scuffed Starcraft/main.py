@@ -5,15 +5,21 @@ import os                       #getcwd(), os.environ
 import sys                      #version()
 import math
 import numpy as np
+import time
 
 import Entity
 import input
 import mathfuncs
 import Map
 import Worker
+import Marauder
+import Marine
 import playerinfo
 import Mineral
 import Overlay
+import Building
+import CommandCenter
+import Quadtree
 
 class App():
     def __init__(self):
@@ -34,22 +40,27 @@ class App():
 
         #Initialize Game Window
         # (Not Used Yet!) Video Display Object: If called before pygame.display.set_mode() can provide user's screen resolution
+        #initialize window
         self._infoObject = pygame.display.Info()
         # Map Image in Background (Needs to be rendered)
         self._display_surfrender = pygame.Surface((1500,1500))
         # Window Size
+        self._display_surfrender = pygame.Surface((800,600))#Map
         self._display_surf = pygame.display.set_mode((800,600), pygame.RESIZABLE)
         # CWD path for images
         self._cwdpath = os.getcwd()
         pygame.display.set_caption("Scuffed StarCraft")
         pygame.display.set_icon(pygame.image.load(os.path.join(self._cwdpath,"Images","sc2.png")))
         pygame.mouse.set_visible(False)
+        #pygame.mouse.set_visible(False)
         pygame.event.set_grab(True)
 
         #Initialize FPS value (see .handlefps())
+        #initialize other values
         self._lasttime = 0
 
         self._input = input.input()
+
         self._playerinfo = playerinfo.playerinfo()
 
         #Initialize Map Dimensions and Camera Set-Up
@@ -66,6 +77,7 @@ class App():
 
         #Initialize Map resources
         self.load_resources()
+        self.load_buildings()
 
 
     def initpygame(self):
@@ -76,6 +88,11 @@ class App():
         if pygame.mixer.get_init() is None:
             print("Error initializing mixer!\n")
             return False
+
+    def load_buildings(self):
+        self._building_list = []
+        building1 = CommandCenter.CommandCenter(900,700,self._commandcenterimg)
+        self._building_list.append(building1)
 
     def load_resources(self):
         #minerals
@@ -88,15 +105,35 @@ class App():
         self.minerallist.append(mineral3)
 
     def load_entities(self):
-        marinesurf = pygame.image.load(os.path.join(self._cwdpath,"Images","marauder.png")).convert()
+        maraudersurf = pygame.image.load(os.path.join(self._cwdpath,"Images","maraudert.png")).convert_alpha()
         scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
-        marinerect = pygame.Rect(0,0,85,85)
-        entity1 = Worker.Worker(25,scvsurf,marinerect)
-        marinerect = pygame.Rect(100,50,85,85)
-        entity2 = Worker.Worker(25,scvsurf,marinerect)
+        marinesurf = pygame.image.load(os.path.join(self._cwdpath,"Images","marine.png")).convert_alpha()
+
+        marinerect = pygame.Rect(700,300,45,45)
+        worker1 = Worker.Worker(15,scvsurf,marinerect)
+        marinerect = pygame.Rect(700,350,45,45)
+        worker2 = Worker.Worker(15,scvsurf,marinerect)
         self._entitylist = []
-        self._entitylist.append(entity1)
-        self._entitylist.append(entity2)
+        self._entitylist.append(worker1)
+        self._entitylist.append(worker2)
+        thesize = 30
+        for x in range(0,thesize):
+            marinerect = pygame.Rect(100,300 + x*30,50,50)
+            entity1 = Marine.Marine(15,marinesurf,marinerect)
+            self._entitylist.append(entity1)
+        self._entityquadtree = Quadtree.Quadtree()
+        for x in range(0,len(self._entitylist)):
+            self._entityquadtree.insertstart(self._entitylist[x])
+        #self._entityquadtree.print()
+        self._enemyentitylist = []
+        for x in range(0,thesize):
+            marinerect = pygame.Rect(400,150 + x*30,50,50)
+            entity1 = Marauder.Marauder(15,maraudersurf,marinerect)
+            self._enemyentitylist.append(entity1)
+        self._enemyentityquadtree = Quadtree.Quadtree()
+        for x in range(0,len(self._enemyentitylist)):
+            self._enemyentityquadtree.insertstart(self._enemyentitylist[x])
+
         self.line = [(100,100),(200,200)]
         self.circle = (200,100,20)
         self.pumpcircle = (400,250,80)
@@ -108,9 +145,10 @@ class App():
         self._mineralimg = pygame.image.load(os.path.join(self._cwdpath,"Images","mineralt.png")).convert_alpha()
 
         #Background Map (stored in map object)
-        self.map._mapimage = pygame.image.load(os.path.join(self._cwdpath,"Images","bigmap3.jpg")).convert()
 
         #Directional Green Cursor
+        self.map._mapimage = pygame.image.load(os.path.join(self._cwdpath,"Images","NeoPlanetSx2.png")).convert()#bigmap3.jpg
+        self._commandcenterimg = pygame.image.load(os.path.join(self._cwdpath,"Images","commandcentert.png")).convert_alpha()
         self._mouseimg1 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse1t.png")).convert_alpha()
         self._mouseimg2 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse2t.png")).convert_alpha()
         self._mouseimg3 = pygame.image.load(os.path.join(self._cwdpath,"Images","mouse3t.png")).convert_alpha()
@@ -125,28 +163,55 @@ class App():
         self.overlay.overlayimage = pygame.image.load(os.path.join(self._cwdpath,"Images/Overlay","CleanBottomOverlay.png")).convert_alpha()
 
     def on_update(self):
+        #update input
+        self._input.update()
         #update map and mouse information
         mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist)
         self._mouseimgcurrent = self._mouseimglist[mouseinfo[0]]
         self._mouseimgoffset[0] = mouseinfo[1]
         self._mouseimgoffset[1] = mouseinfo[2]
 
-        self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf)
+        self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf, self._building_list,self._enemyentitylist,
+                                self._entityquadtree,self._enemyentityquadtree)
 
+
+        """frametime = time.time()
+        for unit in self._entitylist:
+            pass
+        print(time.time() - frametime)
+        frametime = time.time()
+        gen = self._entityquadtree.iterategen()
+        for unit in gen:
+            pass
+        print(time.time() - frametime)
+        """
+
+        #units
         for units in self._entitylist:
-            units.update(self._input,self.minerallist, self.map,self._display_surf)
+            units.update(self._input,self.minerallist, self.map,self._display_surf, self._enemyentitylist, self._entitylist, self._enemyentityquadtree, self._entityquadtree)
+        #remove dead units
+        count = 0
+        for x in range(0,len(self._entitylist)):
+            if self._entitylist[x - count].alive == False:
+                self._entityquadtree.deletestart(self._entitylist[x - count])
+                self._entitylist.pop(x - count)
+                count = count + 1
+        #enemy units
+        for units in self._enemyentitylist:
+            units.update(self._input,self.minerallist, self.map,self._display_surf, self._entitylist, self._enemyentitylist, self._entityquadtree, self._enemyentityquadtree)
+        #remove dead enemy units
+        count = 0
+        for x in range(0,len(self._enemyentitylist)):
+            if self._enemyentitylist[x - count].alive == False:
+                self._enemyentityquadtree.deletestart(self._enemyentitylist[x - count])
+                self._enemyentitylist.pop(x - count)
+                count = count + 1
 
-        #for units in self._playerinfo._selectedlist:
-            #units.handleinput(self)
 
-        answer = mathfuncs.mathfuncs.circlesegcollision(self._entitylist[0].radius,self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1],
-        self.line[0][0],self.line[0][1],self.line[1][0],self.line[1][1])
-        answer2 = mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1],
-         self._entitylist[0].radius), self.circle)
-        #print("Line collision: %d Circle collision: %d" % (answer, answer2))
-        if mathfuncs.mathfuncs.circlecirclecollision((self._entitylist[0].circlecenter[0],self._entitylist[0].circlecenter[1], self._entitylist[0].radius), self.pumpcircle):
-            self.sound_esketit.set_volume(.05)
-            self.sound_esketit.play();
+        #buildings
+        for buildings in self._building_list:
+            buildings.update(self._input)
+
 
         #if not pygame.mixer.music.get_busy():
         #    pygame.mixer.music.load(os.path.join(self._cwdpath,"Sounds","100 on my wrist.wav"))
@@ -165,12 +230,20 @@ class App():
         for x in self._entitylist:
             x.render(self)
 
+        for x in self._enemyentitylist:
+            x.render(self)
+
+        #buildings
+        for buildings in self._building_list:
+            buildings.render(self)
+
         #minerals
         for x in self.minerallist:
             x.render(self)
 
         #map cont. - render map to fit window size
         # MUST BE AFTER rendering units and minerals or they will not appear!
+        #transform surface to fit screen size
         resized_screen = pygame.transform.scale(self._display_surfrender, (self._display_surf.get_width(),self._display_surf.get_height()))
         self._display_surf.blit(resized_screen, (0, 0))
 
@@ -180,6 +253,7 @@ class App():
 
         self.overlay.renderGameClock(self._display_surf)
      
+        #UI
         #mini map
         self.map.renderminimap(self._display_surf)
         #green box
@@ -189,6 +263,8 @@ class App():
         mousesize = 44
         self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
           self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
+        #self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
+          #self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
 
         pygame.display.update()
 
@@ -243,6 +319,7 @@ class App():
 
         #INPUT HANDLING FUNCTION
         #Change _running to false to get out of infinite loop and exit program
+    def on_event(self, event): #INPUT HANDLING FUNCTION
         if event.type == QUIT:
             self.on_exit()
 

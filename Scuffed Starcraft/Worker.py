@@ -10,7 +10,13 @@ class Worker(Entity.Entity):
         self.Move(0,0)
         self.collecting = False
         self.worker = True
-        self.speed = 5
+        self.speed = 3
+        self.attackrange = 25
+        self.health = 5
+        self.maxhealth = self.health
+        self.attackspeed = 75
+        self.attackspeedcounter = self.attackspeed
+        self.damage = 1
         #extra
 
     def render(self, game):
