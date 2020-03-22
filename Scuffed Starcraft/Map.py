@@ -7,16 +7,16 @@ import pygame
 from pygame.locals import *
 
 class Map:
-    def __init__(self):
+    def __init__(self, x, y):
         #render stuff
-        self._renderdimensions = np.array([800,600])
+        self._renderdimensions = np.array([x,y]) # 800,600
         self._mapimage = None #is pygame image so holds dimensions as well
         #camera stuff
         self._cameraposition = np.array([0,0])
         self._cameraspeed = 12
         self._camerazoom = 1.0
 
-    def handleinput(self, input, displaysurf, mouseimg, mouseimglist): #returns tuple(mouseimgvalue, mousexoffset,mouseyoffset)
+    def handleinput(self, input, displaysurf, mouseimg, mouseimglist, editmode): #returns tuple(mouseimgvalue, mousexoffset,mouseyoffset)
         #handle camera changes
         movelength = 20
         val = 0
@@ -70,14 +70,15 @@ class Map:
 
         #handle minimouse clicks
         #if your mouse is in mini map and you click move the camera position accordingly
-        if self.ispointonminimap(input.mouseclickposition[0],input.mouseclickposition[1], displaysurf):
-            if input.leftclick == True:
-                #get percent and move percent
-                #x (13,118)
-                xpercent = float((input.mouseposition[0] - 13) / 105.0)#MINI
-                ypercent = float((input.mouseposition[1] - (displaysurf.get_height() - 150.0)) / 150.0)#MINI
-                self._cameraposition[0] = int(self._mapimage.get_width() * xpercent) - (self._renderdimensions[0]/2)
-                self._cameraposition[1] = int(self._mapimage.get_height() * ypercent) - (self._renderdimensions[1]/2)
+        if not editmode:
+            if self.ispointonminimap(input.mouseclickposition[0],input.mouseclickposition[1], displaysurf):
+                if input.leftclick == True:
+                    #get percent and move percent
+                    #x (13,118)
+                    xpercent = float((input.mouseposition[0] - 13) / 105.0)#MINI
+                    ypercent = float((input.mouseposition[1] - (displaysurf.get_height() - 150.0)) / 150.0)#MINI
+                    self._cameraposition[0] = int(self._mapimage.get_width() * xpercent) - (self._renderdimensions[0]/2)
+                    self._cameraposition[1] = int(self._mapimage.get_height() * ypercent) - (self._renderdimensions[1]/2)
 
         if self._cameraposition[0] < 0:
             self._cameraposition[0] = 0

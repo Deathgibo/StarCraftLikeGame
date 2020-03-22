@@ -31,6 +31,7 @@ class Entity():
         self.state = idlestate()
         self.selected = False
         self.movelocation = np.array([0,0])
+        self.movepaths = []
         self.worker = False
         self.mineralpatch = None
         self.holdingmineral = False
@@ -49,7 +50,7 @@ class Entity():
         self.attackmove = False
         self.alive = True
 
-    def update(self, input, minerals, mapinfo, displaysurf, enemyunits, units, enemyunitsquad, unitsquad):
+    def update(self, input, minerals, mapinfo, displaysurf, enemyunits, units, enemyunitsquad, unitsquad, graph):
         self.stateglobalupdate(input,self)
         self.state.update(self, enemyunits, units, enemyunitsquad, unitsquad)
         newstate = self.statetrigger(input,self, minerals, mapinfo, displaysurf, enemyunits, enemyunitsquad, unitsquad)
@@ -57,7 +58,7 @@ class Entity():
             newstate = self.state.handle_input(input,self, enemyunits, enemyunitsquad)
         if newstate != None:
             self.state = newstate
-            self.state.entry(self)
+            self.state.entry(self, graph)
 
     def handleinput(self, input):
         pass
@@ -254,7 +255,7 @@ class entity_state():
     def __init__(self):
         pass
 
-    def entry(self, unit):
+    def entry(self, unit, graph):
         #switch animations
         #set values
         pass
@@ -269,7 +270,7 @@ class entity_state():
 class miningstate(entity_state):
     def __init__(self):
         self.state = 0 #0 walking to mineral, 1 collecting mineral, 2 walking to base, 3 depositing in base
-    def entry(self, unit):
+    def entry(self, unit, graph):
         self.statezero(unit)
     def update(self, unit, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         if self.state == 0:
@@ -322,7 +323,7 @@ class miningstate(entity_state):
 class idlestate(entity_state):
     def __init__(self):
         pass
-    def entry(self, unit):
+    def entry(self, unit, graph):
         pass
     def update(self, unit, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         pass
@@ -336,13 +337,20 @@ class idlestate(entity_state):
 class movestate(entity_state):
     def __init__(self):
         self.attackmove = False
-    def entry(self, unit):
+    def entry(self, unit, graph):
         if unit.attackmove:
             self.attackmove = True
             unit.attackmove = False
-        self.dir = np.array([unit.movelocation[0] - unit.circlecenter[0],unit.movelocation[1] - unit.circlecenter[1]])
-        self.dir = self.dir / np.linalg.norm(self.dir)
-        self.circle = (unit.movelocation[0],unit.movelocation[1],1)
+        #run path algorithm to get a list of vertices
+        #look at first entry and get circle and dir
+        l = graph.UnitPath((unit.circlecenter[0],unit.circlecenter[1]), (unit.movelocation[0], unit.movelocation[1]))
+        self.movepaths = l
+        #print(self.movepaths)
+        if len(self.movepaths) > 0:
+            unit.movelocation = np.array([self.movepaths[0][0],self.movepaths[0][1]])
+            self.dir = np.array([unit.movelocation[0] - unit.circlecenter[0],unit.movelocation[1] - unit.circlecenter[1]])
+            self.dir = self.dir / np.linalg.norm(self.dir)
+            self.circle = (unit.movelocation[0],unit.movelocation[1],1)
     def update(self, unit, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         self.dir = np.array([unit.movelocation[0] - unit.circlecenter[0],unit.movelocation[1] - unit.circlecenter[1]])
         self.dir = self.dir / np.linalg.norm(self.dir)
@@ -356,7 +364,13 @@ class movestate(entity_state):
                 return attackstate()
         #check if it reached destination
         if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius), self.circle):
-            return idlestate()
+            #pop from list and get next item from path if empty go idle
+            self.movepaths.pop(0)
+            if len(self.movepaths) > 0:
+                unit.movelocation = np.array([self.movepaths[0][0],self.movepaths[0][1]])
+                self.circle = (unit.movelocation[0],unit.movelocation[1],1)
+            else:
+                return idlestate()
         return None
 """
 class attackmovestate(entity_state):
@@ -386,7 +400,7 @@ class attackstate(entity_state):
         self.attacking = False
         self.attacklength = 20
         self.attackingcounter = 0
-    def entry(self, unit):
+    def entry(self, unit, graph):
         if unit.followtarget:
             self.followtarget = True
         else:
@@ -503,7 +517,7 @@ class firingstate(entity_state):
 class deadstate(entity_state):
     def __init__(self):
         pass
-    def entry(self, unit):
+    def entry(self, unit, graph):
         unit.alive = False
     def update(self, unit, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         #play death animation

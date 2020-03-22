@@ -12,6 +12,7 @@ class input():
         self.mousechange = (0,0)
         self.mousewheel = 0
         self.keys = [0] * 500
+        self.keysframe = [(False,False)] * 500 #rests every frame
         #aclick stuff
         self.aclick = False
         self.aclickhelp = False
@@ -24,6 +25,9 @@ class input():
         self.leftclickletgo = False
         self.rightclickframe = False
         self.aclick = False
+        for x in range(0,len(self.keysframe)):
+            if self.keysframe[x][1]:
+                self.keysframe[x] = (False, self.keysframe[x][1])
 
     def update(self):
         if self.keys[pygame.K_a] == 0:

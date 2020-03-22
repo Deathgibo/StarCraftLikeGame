@@ -20,6 +20,7 @@ import Overlay
 import Building
 import CommandCenter
 import Quadtree
+import MapGraph
 
 class App():
     def __init__(self):
@@ -43,7 +44,9 @@ class App():
         self._infoObject = pygame.display.Info()
         # Map Image in Background (Needs to be rendered)
         # Window Size
-        self._display_surfrender = pygame.Surface((800,600))#Map
+        resolutionx = 1000
+        resolutiony = 800
+        self._display_surfrender = pygame.Surface((resolutionx,resolutiony))#Map 800,600
         self._display_surf = pygame.display.set_mode((800,600), pygame.RESIZABLE)
         # CWD path for images
         self._cwdpath = os.getcwd()
@@ -62,7 +65,7 @@ class App():
         self._playerinfo = playerinfo.playerinfo()
 
         #Initialize Map Dimensions and Camera Set-Up
-        self.map = Map.Map()
+        self.map = Map.Map(resolutionx, resolutiony)
 
         #Initialize Overlay (UI)
         self.overlay = Overlay.Overlay()
@@ -77,6 +80,14 @@ class App():
         self.load_resources()
         self.load_buildings()
 
+        #Initialize Graph for Map
+        self.load_Graph()
+
+        #GAME OPTIONS
+        self.overlay_enable = True #Toggles overlay
+        self.worldgraph_editmode = True #Toggles being able to edit the world graph nodes
+        self.worldgraph_render = False #Toggles being able to see the world graph
+        self.bspgraph_render = False #Toggles being able to see the bsp graph
 
     def initpygame(self):
         #(from: on_execute-> on_init)
@@ -86,6 +97,10 @@ class App():
         if pygame.mixer.get_init() is None:
             print("Error initializing mixer!\n")
             return False
+
+    def load_Graph(self):
+        self.worldgraph = MapGraph.MapGraph()
+
 
     def load_buildings(self):
         self._building_list = []
@@ -116,10 +131,10 @@ class App():
         self._entitylist = []
         self._entitylist.append(worker1)
         self._entitylist.append(worker2)
-        thesize = 30
+        thesize = 5
         #Fill entity List structure
         for x in range(0,thesize):
-            marinerect = pygame.Rect(100,300 + x*30,50,50)
+            marinerect = pygame.Rect(100,500 + x*30,50,50)
             entity1 = Marine.Marine(15,marinesurf,marinerect)
             self._entitylist.append(entity1)
 
@@ -131,7 +146,7 @@ class App():
         #Fill enemy List structure
         self._enemyentitylist = []
         for x in range(0,thesize):
-            marinerect = pygame.Rect(400,150 + x*30,50,50)
+            marinerect = pygame.Rect(400,250 + x*30,50,50)
             entity1 = Marauder.Marauder(15,maraudersurf,marinerect)
             self._enemyentitylist.append(entity1)
 
@@ -164,11 +179,12 @@ class App():
         self.overlay.overlayimage = pygame.image.load(os.path.join(self._cwdpath,"Images/Overlay","CleanBottomOverlay.png")).convert_alpha()
 
     def on_update(self):
+        #KEEP input update at top
         #update input
         self._input.update()
 
         #update map and mouse information
-        mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist)
+        mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist, self.worldgraph_editmode)
         self._mouseimgcurrent = self._mouseimglist[mouseinfo[0]]
         self._mouseimgoffset[0] = mouseinfo[1]
         self._mouseimgoffset[1] = mouseinfo[2]
@@ -177,6 +193,12 @@ class App():
         self._playerinfo.update(self._input, self._entitylist,self.map,self._display_surf, self._building_list,self._enemyentitylist,
                                 self._entityquadtree,self._enemyentityquadtree)
 
+        #update graph creating
+        if self.worldgraph_editmode:
+            self.worldgraph.update(self._input, self.map, self._display_surf, self._cwdpath)
+
+        #if self._input.keys[pygame.K_y]:
+            #self.worldgraph.GetShortestPath()
 
         """
         quad tree update iterate implementation (slower)
@@ -193,7 +215,8 @@ class App():
 
         #units
         for units in self._entitylist:
-            units.update(self._input,self.minerallist, self.map,self._display_surf, self._enemyentitylist, self._entitylist, self._enemyentityquadtree, self._entityquadtree)
+            units.update(self._input,self.minerallist, self.map,self._display_surf, self._enemyentitylist, self._entitylist, self._enemyentityquadtree, self._entityquadtree,
+                         self.worldgraph)
 
         #remove dead units
         count = 0
@@ -205,7 +228,8 @@ class App():
 
         #enemy units
         for units in self._enemyentitylist:
-            units.update(self._input,self.minerallist, self.map,self._display_surf, self._entitylist, self._enemyentitylist, self._entityquadtree, self._enemyentityquadtree)
+            units.update(self._input,self.minerallist, self.map,self._display_surf, self._entitylist, self._enemyentitylist, self._entityquadtree, self._enemyentityquadtree,
+                          self.worldgraph)
 
         #remove dead enemy units
         count = 0
@@ -262,6 +286,15 @@ class App():
         for x in self.minerallist:
             x.render(self)
 
+        #graph
+        if self._input.keysframe[pygame.K_i][0]:
+            self.bspgraph_render = not self.bspgraph_render
+        if self.bspgraph_render:
+            self.worldgraph.renderbsp(self._display_surfrender, self.map)
+        if self._input.keysframe[pygame.K_o][0]:
+            self.worldgraph_render = not self.worldgraph_render
+        if self.worldgraph_render:
+            self.worldgraph.render(self._display_surfrender, self.map)
         #map cont. - render map to fit window size
         # MUST BE AFTER rendering units and minerals or they will not appear!
         #transform surface to fit screen size
@@ -270,13 +303,16 @@ class App():
 
         #UI - ORDER MATTERS!
         #bottom Overlay
-        self.overlay.render(self._display_surf)
+        if self._input.keysframe[pygame.K_MINUS][0]:
+            self.overlay_enable = not self.overlay_enable
+        if self.overlay_enable:
+            self.overlay.render(self._display_surf)
 
-        self.overlay.renderGameClock(self._display_surf)
+            self.overlay.renderGameClock(self._display_surf)
 
         #UI
         #mini map
-        self.map.renderminimap(self._display_surf)
+            self.map.renderminimap(self._display_surf)
         #green box
         self._playerinfo.render(self._display_surf)
 
@@ -287,6 +323,7 @@ class App():
 
         #self.drawimagerectgui(pygame.Rect(self._input.mouseposition[0] - int(mousesize/2) + self._mouseimgoffset[0],
           #self._input.mouseposition[1] - int(mousesize/2) + self._mouseimgoffset[1],mousesize,mousesize),self._mouseimgcurrent)
+
 
         pygame.display.update()
 
@@ -356,10 +393,13 @@ class App():
 
         elif event.type == KEYUP:
             self._input.keys[event.key] = 0
+            self._input.keysframe[event.key] = (self._input.keysframe[event.key][0],False)
 
         elif event.type == KEYDOWN: #event.key (pygame.K_x) event.mod == pygame.KMOD_LSHIFT
             speed = 10
             self._input.keys[event.key] = 1
+            self._input.keysframe[event.key] = (True,True)
+
             if event.key == pygame.K_1:
                 pygame.display.set_mode((800, 600),  pygame.RESIZABLE)
             if event.key == pygame.K_2:
