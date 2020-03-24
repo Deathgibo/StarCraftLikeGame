@@ -349,17 +349,70 @@ class App():
         pygame.quit()
         pygame.mixer.quit()
 
+    def draw_text(self, text, size, width_loc, height_loc, c):
+        font = pygame.font.Font(pygame.font.get_default_font(), size)
+        text_surface = font.render(text, True, c)
+        self._display_surf.blit(text_surface, (width_loc, height_loc))
+
+    def menu(self):
+        '''display main menu'''
+
+        title = pygame.image.load(os.path.join(self._cwdpath, "Images", "Title.png")).convert_alpha()
+        # title = pygame.transform.scale(title, (WINDOWWIDTH, 81 * 2))
+        background = pygame.image.load(os.path.join(self._cwdpath, "Images", "StartMenu.png")).convert()
+        background_rect = background.get_rect()
+
+        # display instructions for game
+        # arrow_keys = pygame.image.load(os.path.join(self._cwdpath, "Images", "")).convert_alpha()
+        # arrow_keys = pygame.transform.scale(arrow_keys, (150, 85))
+        # spacebar = pygame.image.load(os.path.join(self._cwdpath, "Images", 'spacebar.png')).convert_alpha()
+        # spacebar = pygame.transform.scale(spacebar, (150, 50))
+
+        self._display_surf.blit(background, background_rect)
+        self._display_surf.blit(title, (250, 40))
+        # self._display_surf.blit(arrow_keys, (225, 400))
+        # self._display_surf.blit(spacebar, (225, 500))
+        pygame.draw.rect(self._display_surf, (0, 0, 255), (240, 294, 321, 35))
+        pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 345, 240, 35))
+        self.draw_text("PRESS [ENTER] TO BEGIN", 24, 240, 294, (255, 255, 255))
+        self.draw_text("PRESS [Q] TO QUIT", 24, 280, 345, (255, 255, 255))
+
+        # game instructions
+
+        pygame.display.update()
+
+        while True:
+            event = pygame.event.poll()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    break
+                elif event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
     def on_execute(self):
         # Initialize the window, camera, media and other entities. Return false if
         # there is an error on initiating Mixer.
         if self.on_init() == False:
             self._running = False
 
+        start = 0
         # Main Game Running
         while (self._running):
             self._input.reset()
             for event in pygame.event.get():
                 self.on_event(event)
+
+            # Start Game Menu
+            if start == 1:
+                self.menu()
+                start += 1
+            elif start == 0:
+                start += 1
+
             self.on_update()
             self.on_render()
             self.handlefps()

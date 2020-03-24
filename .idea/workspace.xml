@@ -2,23 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3d044621-7899-42d4-a5f8-98347fa6dfb5" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/AdjacencyList.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/AdjacencyList.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/BSP.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/BSP.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Building.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Building.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Entity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Map.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/MapGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/MapGraph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Marauder.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Marauder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Marine.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Marine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Mineral.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Mineral.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Overlay.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Overlay.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/PriorityQueue.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/PriorityQueue.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Quadtree.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Quadtree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/Worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/Worker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/input.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/input.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Scuffed Starcraft/Images/StartMenu.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Scuffed Starcraft/Images/Title.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scuffed Starcraft/playerinfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scuffed Starcraft/playerinfo.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,100 +18,74 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="71">
-              <caret line="355" selection-start-line="355" selection-end-line="355" />
+            <state relative-caret-position="161">
+              <caret line="371" column="47" selection-start-line="371" selection-start-column="47" selection-end-line="371" selection-end-column="47" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
+                <element signature="e#3074#3361#0" />
                 <element signature="e#3397#3434#0" />
                 <element signature="e#3475#3625#0" />
                 <element signature="e#3665#4013#0" />
                 <element signature="e#4052#5760#0" />
-                <element signature="e#5796#7341#0" />
+                <element signature="e#7376#10370#0" />
                 <element signature="e#13518#13638#0" />
                 <element signature="e#13693#13807#0" />
-                <element signature="e#13840#13861#0" />
                 <element signature="e#13897#13998#0" />
+                <element signature="e#14580#15028#0" />
+                <element signature="e#15069#18051#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Worker.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="22" selection-start-line="22" selection-end-line="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/playerinfo.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="244">
-              <caret line="104" selection-start-line="104" selection-end-line="104" />
-            </state>
-          </provider>
+        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/NeoPlanetSx1.png">
+          <provider selected="true" editor-type-id="images" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Map.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="116" selection-start-line="116" selection-end-line="116" />
+            <state relative-caret-position="107">
+              <caret line="133" column="23" selection-start-line="133" selection-start-column="23" selection-end-line="133" selection-end-column="33" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/MapGraph.py">
+        <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943125/pygame/surface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="230" selection-start-line="230" selection-end-line="230" />
-              <folding>
-                <element signature="e#114#134#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="132">
+              <caret line="151" column="8" selection-start-line="151" selection-start-column="8" selection-end-line="151" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/PriorityQueue.py">
+        <entry file="file://$PROJECT_DIR$/todo">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="27" selection-start-line="27" selection-end-line="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/CommandCenter.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Building.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/input.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="39" selection-start-line="39" selection-end-line="39" />
+            <state relative-caret-position="60">
+              <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>blit</find>
+      <find>pygame.image.load</find>
+      <find>250</find>
+      <find>pygame.draw.rect</find>
+      <find>WINDOWWIDTH</find>
+      <find>WIDTH</find>
+      <find>_display_surf.get_width</find>
+      <find>draw</find>
+      <find>screen</find>
+      <find>exit</find>
+      <find>800</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -148,18 +109,9 @@
         <option value="$PROJECT_DIR$/Scuffed Starcraft/PriorityQueue.py" />
         <option value="$PROJECT_DIR$/Scuffed Starcraft/AdjacencyList.py" />
         <option value="$PROJECT_DIR$/Scuffed Starcraft/BSP.py" />
+        <option value="$PROJECT_DIR$/Scuffed Starcraft/mathfuncs.py" />
+        <option value="$PROJECT_DIR$/Scuffed Starcraft/CommandCenter.py" />
         <option value="$PROJECT_DIR$/Scuffed Starcraft/main.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/StarCraftLikeGame.iml" />
-        <option value="$PROJECT_DIR$/.idea/misc.xml" />
-        <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
       </list>
     </option>
   </component>
@@ -205,8 +157,9 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -214,6 +167,11 @@
         <option name="myUseModuleSdk" value="true" />
       </console-settings>
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Scuffed Starcraft/Images" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -269,20 +227,20 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="715" extended-state="6" />
+    <frame x="0" y="23" width="1280" height="720" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18739903" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1615509" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" />
-      <window_info active="true" anchor="bottom" id="Python Console" visible="true" weight="0.32905295" />
+      <window_info anchor="bottom" id="Python Console" weight="0.32905295" />
       <window_info anchor="bottom" id="Terminal" weight="0.2199037" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32905295" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39967898" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32961783" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32643312" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.1799363" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -298,7 +256,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Scuffed Starcraft/main.py</url>
-          <line>465</line>
+          <line>521</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
@@ -327,13 +285,6 @@
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/sc2.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/todo">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/commandcentert.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -344,9 +295,6 @@
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/mouse1.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/scv2.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/marauder.png">
@@ -385,20 +333,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/NeoPlanetSx2.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Mineral.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/CommandCenter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
         </state>
       </provider>
     </entry>
@@ -423,13 +361,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/input.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/MapGraph.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="109">
@@ -437,13 +368,6 @@
           <folding>
             <element signature="e#114#134#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Map.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="116" selection-start-line="116" selection-end-line="116" />
         </state>
       </provider>
     </entry>
@@ -475,21 +399,96 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/CommandCenter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="5" column="25" selection-start-line="5" selection-start-column="25" selection-end-line="5" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/todo">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/scv2.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/scv.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/sc2mouses.jpg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/mathfuncs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="3" column="12" lean-forward="true" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/mapgraph.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/Overlay/CleanBottomOverlay.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file:///Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/pygame/examples/macosx/macfont.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="67" column="8" selection-start-line="67" selection-start-column="8" selection-end-line="67" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Map.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="107">
+          <caret line="133" column="23" selection-start-line="133" selection-start-column="23" selection-end-line="133" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/NeoPlanetSx2.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharmCE2019.1/python_stubs/-1199943125/pygame/surface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="151" column="8" selection-start-line="151" selection-start-column="8" selection-end-line="151" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/NeoPlanetSx1.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/Images/StartMenu.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/Scuffed Starcraft/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="71">
-          <caret line="355" selection-start-line="355" selection-end-line="355" />
+        <state relative-caret-position="161">
+          <caret line="371" column="47" selection-start-line="371" selection-start-column="47" selection-end-line="371" selection-end-column="47" />
           <folding>
             <element signature="e#0#50#0" expanded="true" />
+            <element signature="e#3074#3361#0" />
             <element signature="e#3397#3434#0" />
             <element signature="e#3475#3625#0" />
             <element signature="e#3665#4013#0" />
             <element signature="e#4052#5760#0" />
-            <element signature="e#5796#7341#0" />
+            <element signature="e#7376#10370#0" />
             <element signature="e#13518#13638#0" />
             <element signature="e#13693#13807#0" />
-            <element signature="e#13840#13861#0" />
             <element signature="e#13897#13998#0" />
+            <element signature="e#14580#15028#0" />
+            <element signature="e#15069#18051#0" />
           </folding>
         </state>
       </provider>
