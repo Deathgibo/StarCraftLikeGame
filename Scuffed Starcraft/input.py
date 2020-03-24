@@ -1,19 +1,20 @@
 import pygame
 
+
 class input():
     def __init__(self):
         self.leftclick = False
-        self.leftclickframe = False #resets every frame
+        self.leftclickframe = False  # resets every frame
         self.leftclickletgo = False
         self.rightclick = False
         self.rightclickframe = False
-        self.mouseposition = (0,0)
-        self.mouseclickposition = (0,0)
-        self.mousechange = (0,0)
+        self.mouseposition = (0, 0)
+        self.mouseclickposition = (0, 0)
+        self.mousechange = (0, 0)
         self.mousewheel = 0
         self.keys = [0] * 500
-        self.keysframe = [(False,False)] * 500 #rests every frame
-        #aclick stuff
+        self.keysframe = [(False, False)] * 500  # rests every frame
+        # aclick stuff
         self.aclick = False
         self.aclickhelp = False
         self.apressedonce = False
@@ -25,7 +26,7 @@ class input():
         self.leftclickletgo = False
         self.rightclickframe = False
         self.aclick = False
-        for x in range(0,len(self.keysframe)):
+        for x in range(0, len(self.keysframe)):
             if self.keysframe[x][1]:
                 self.keysframe[x] = (False, self.keysframe[x][1])
 
@@ -44,9 +45,11 @@ class input():
 
 class inputlocator():
     input_ref = None
+
     @staticmethod
     def provide(input):
         inputlocator.input_ref = input
+
     @staticmethod
     def getinputinfo():
         return inputlocator.input_ref

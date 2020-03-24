@@ -1,4 +1,4 @@
-#This class handles the graph of vertices and edges over the world which is used for the unit movement algorithms
+# This class handles the graph of vertices and edges over the world which is used for the unit movement algorithms
 import AdjacencyList
 import pygame
 import mathfuncs
@@ -44,17 +44,18 @@ c - press c and click to see all visible vertices from clicked point
 u - press you and click any two locations, will highlight vertices unit will walk to, if any
 """
 
+
 class MapGraph():
     def __init__(self):
-        #helper attributes
-        self.key = -1 # -1:None, 0:v, 1:d, 2:e, 3:c
+        # helper attributes
+        self.key = -1  # -1:None, 0:v, 1:d, 2:e, 3:c
         self.clicky = False
         self.vertexindex = -1
 
-        self.adjlist = AdjacencyList.AdjacencyList()    #world adjlist
-        self.adjlistbsp = AdjacencyList.AdjacencyList() #bsp adjlist
-        self.createmap() #loads both adjlist
-        self.bsp = BSP.BSP(self.adjlistbsp) #creates bsp tree
+        self.adjlist = AdjacencyList.AdjacencyList()  # world adjlist
+        self.adjlistbsp = AdjacencyList.AdjacencyList()  # bsp adjlist
+        self.createmap()  # loads both adjlist
+        self.bsp = BSP.BSP(self.adjlistbsp)  # creates bsp tree
 
     def update(self, input, map, displaysurf, cwdpath):
         if input.keys[pygame.K_z]:
@@ -78,39 +79,40 @@ class MapGraph():
         elif input.keys[pygame.K_u]:
             self.key = 8
 
-
-        #clicked
+        # clicked
         if input.leftclickframe:
             dontreset = False
-            worldcoords = map.windowtoworldtransform(input.mouseposition[0],input.mouseposition[1], displaysurf)
-            #v
+            worldcoords = map.windowtoworldtransform(input.mouseposition[0], input.mouseposition[1], displaysurf)
+            # v
             if self.key == 0:
-                self.adjlist.addvertex(worldcoords[0],worldcoords[1])
-                self.adjlistbsp.addvertex(worldcoords[0],worldcoords[1])
-            #c
+                self.adjlist.addvertex(worldcoords[0], worldcoords[1])
+                self.adjlistbsp.addvertex(worldcoords[0], worldcoords[1])
+            # c
             elif self.key == 6:
                 for vertex in self.adjlist.vtable:
                     vertex.highlight = False
                 l = []
                 starttime = time.time()
-                for x in range(0,2):
-                    self.bsp.closestnodes((worldcoords[0],worldcoords[1]), l)
-                #print("total time %f" % (time.time() - starttime))
+                for x in range(0, 2):
+                    self.bsp.closestnodes((worldcoords[0], worldcoords[1]), l)
+                # print("total time %f" % (time.time() - starttime))
                 for x in l:
                     if x < len(self.adjlist.vtable):
                         self.adjlist.vtable[x].highlight = True
-            #d
+            # d
             elif self.key == 1:
-                clickcircle = (worldcoords[0],worldcoords[1], 20)
-                for x in range(0,len(self.adjlist.vtable)):
-                    if mathfuncs.mathfuncs.pointcirclecollision((self.adjlist.vtable[x].pos[0],self.adjlist.vtable[x].pos[1]), clickcircle):
+                clickcircle = (worldcoords[0], worldcoords[1], 20)
+                for x in range(0, len(self.adjlist.vtable)):
+                    if mathfuncs.mathfuncs.pointcirclecollision(
+                            (self.adjlist.vtable[x].pos[0], self.adjlist.vtable[x].pos[1]), clickcircle):
                         self.adjlist.deletevertex(x)
                         break
-                for x in range(0,len(self.adjlistbsp.vtable)):
-                    if mathfuncs.mathfuncs.pointcirclecollision((self.adjlistbsp.vtable[x].pos[0],self.adjlistbsp.vtable[x].pos[1]), clickcircle):
+                for x in range(0, len(self.adjlistbsp.vtable)):
+                    if mathfuncs.mathfuncs.pointcirclecollision(
+                            (self.adjlistbsp.vtable[x].pos[0], self.adjlistbsp.vtable[x].pos[1]), clickcircle):
                         self.adjlistbsp.deletevertex(x)
                         break
-            #e
+            # e
             elif self.key == 2:
                 dontreset = True
                 if self.clicky:
@@ -120,14 +122,14 @@ class MapGraph():
                     elif self.vertexindex == index2:
                         pass
                     else:
-                        self.adjlist.addedge(self.vertexindex,index2)
+                        self.adjlist.addedge(self.vertexindex, index2)
 
                     self.vertexindex = -1
                     self.clicky = False
                 else:
                     self.vertexindex = self.indexclicked(worldcoords)
                     self.clicky = True
-            #w
+            # w
             elif self.key == 7:
                 dontreset = True
                 if self.clicky:
@@ -137,14 +139,14 @@ class MapGraph():
                     elif self.vertexindex == index2:
                         pass
                     else:
-                        self.adjlistbsp.addedge(self.vertexindex,index2)
+                        self.adjlistbsp.addedge(self.vertexindex, index2)
 
                     self.vertexindex = -1
                     self.clicky = False
                 else:
                     self.vertexindex = self.indexclicked(worldcoords)
                     self.clicky = True
-            #r
+            # r
             elif self.key == 3:
                 dontreset = True
                 if self.clicky:
@@ -154,58 +156,58 @@ class MapGraph():
                     elif self.vertexindex == index2:
                         pass
                     else:
-                        self.adjlist.deleteedge(self.vertexindex,index2)
-                        self.adjlistbsp.deleteedge(self.vertexindex,index2)
+                        self.adjlist.deleteedge(self.vertexindex, index2)
+                        self.adjlistbsp.deleteedge(self.vertexindex, index2)
                     self.vertexindex = -1
                     self.clicky = False
                 else:
                     self.vertexindex = self.indexclicked(worldcoords)
                     self.clicky = True
-            #u
+            # u
             elif self.key == 8:
                 dontreset = True
                 if self.clicky:
-                    index2 = (worldcoords[0],worldcoords[1])
+                    index2 = (worldcoords[0], worldcoords[1])
                     if self.vertexindex == -1 or index2 == -1:
                         pass
                     elif self.vertexindex == index2:
                         pass
                     else:
                         starttime = time.time()
-                        #call binary tree operation to get a list of visible vertices
+                        # call binary tree operation to get a list of visible vertices
                         unitlist = []
                         clicklist = []
-                        self.bsp.closestnodes((self.vertexindex[0],self.vertexindex[1]), unitlist)
-                        self.bsp.closestnodes((index2[0],index2[1]), clicklist)
-                        #now add 2 vertices and all edges connecting visible vertices to main graph
+                        self.bsp.closestnodes((self.vertexindex[0], self.vertexindex[1]), unitlist)
+                        self.bsp.closestnodes((index2[0], index2[1]), clicklist)
+                        # now add 2 vertices and all edges connecting visible vertices to main graph
                         originalsize = len(self.adjlist.vtable)
-                        self.adjlist.addvertex(self.vertexindex[0],self.vertexindex[1])
-                        self.adjlist.addvertex(index2[0],index2[1])
+                        self.adjlist.addvertex(self.vertexindex[0], self.vertexindex[1])
+                        self.adjlist.addvertex(index2[0], index2[1])
                         size = len(self.adjlist.vtable) - 1
                         size2 = len(self.adjlist.vtable) - 2
                         for x in unitlist:
                             if x < originalsize:
-                                self.adjlist.addedge(size2,x)
+                                self.adjlist.addedge(size2, x)
                         for x in clicklist:
                             if x < originalsize:
-                                self.adjlist.addedge(size,x)
+                                self.adjlist.addedge(size, x)
 
-                        #vertices added to graph call shortest path algorithm
+                        # vertices added to graph call shortest path algorithm
                         l = []
                         l = self.GetShortestPath(size2, size, l)
 
-                        #remove from graph
+                        # remove from graph
                         self.adjlist.deletevertex(size)
                         self.adjlist.deletevertex(size2)
 
-                        #print(time.time() - starttime)
+                        # print(time.time() - starttime)
 
                     self.vertexindex = -1
                     self.clicky = False
                 else:
-                    self.vertexindex = (worldcoords[0],worldcoords[1])
+                    self.vertexindex = (worldcoords[0], worldcoords[1])
                     self.clicky = True
-            #y
+            # y
             elif self.key == 5:
                 dontreset = True
                 if self.clicky:
@@ -216,7 +218,7 @@ class MapGraph():
                         pass
                     else:
                         l = []
-                        self.GetShortestPath(self.vertexindex,index2, l)
+                        self.GetShortestPath(self.vertexindex, index2, l)
 
                     self.vertexindex = -1
                     self.clicky = False
@@ -225,27 +227,27 @@ class MapGraph():
                     self.clicky = True
             if not dontreset:
                 self.key = -1
-        #not clicked
+        # not clicked
         else:
-            #p
+            # p
             if input.keys[pygame.K_p]:
-                #os.path.join(self._cwdpath,"Images","sc2.png")
+                # os.path.join(self._cwdpath,"Images","sc2.png")
                 f = open("mapgraph.txt", 'w')
                 f.write("#copy and past into MapGraph.MapGraph.createmap() functions\n")
                 for vertex in self.adjlist.vtable:
-                    f.write("        self.adjlist.addvertex(%f, %f)\n" % (vertex.pos[0],vertex.pos[1]))
-                for x in range(0,len(self.adjlist.adjlist)):
+                    f.write("        self.adjlist.addvertex(%f, %f)\n" % (vertex.pos[0], vertex.pos[1]))
+                for x in range(0, len(self.adjlist.adjlist)):
                     for node in self.adjlist.adjlist[x]:
                         if node[0] > x:
-                            f.write("        self.adjlist.addedge(%d, %d)\n" % (x,node[0]))
+                            f.write("        self.adjlist.addedge(%d, %d)\n" % (x, node[0]))
 
                 f.write("#BSP adjacency list\n")
                 for vertex in self.adjlistbsp.vtable:
-                    f.write("        self.adjlistbsp.addvertex(%f, %f)\n" % (vertex.pos[0],vertex.pos[1]))
-                for x in range(0,len(self.adjlistbsp.adjlist)):
+                    f.write("        self.adjlistbsp.addvertex(%f, %f)\n" % (vertex.pos[0], vertex.pos[1]))
+                for x in range(0, len(self.adjlistbsp.adjlist)):
                     for node in self.adjlistbsp.adjlist[x]:
                         if node[0] > x:
-                            f.write("        self.adjlistbsp.addedge(%d, %d)\n" % (x,node[0]))
+                            f.write("        self.adjlistbsp.addedge(%d, %d)\n" % (x, node[0]))
                 f.close()
                 print("File saved")
 
@@ -253,16 +255,16 @@ class MapGraph():
         starttime = time.time()
         unitlist = []
         clicklist = []
-        #see if clickpoint is visible from unitlist
+        # see if clickpoint is visible from unitlist
         clicklocation2 = (clicklocation[0] + 1, clicklocation[1] + 1)
-        self.bsp.graph.addvertex(clicklocation[0],clicklocation[1])
-        self.bsp.graph.addvertex(clicklocation2[0],clicklocation2[1])
+        self.bsp.graph.addvertex(clicklocation[0], clicklocation[1])
+        self.bsp.graph.addvertex(clicklocation2[0], clicklocation2[1])
         sizey = len(self.bsp.graph.vtable)
-        seg = BSP.BSPNode(sizey - 2,sizey - 1, self.bsp.calculatenormal(sizey - 2,sizey - 1))
+        seg = BSP.BSPNode(sizey - 2, sizey - 1, self.bsp.calculatenormal(sizey - 2, sizey - 1))
         i = []
         self.bsp.addsegment(1, seg, i)
-        #print("start")
-        self.bsp.closestnodes((unitlocation[0],unitlocation[1]), unitlist)
+        # print("start")
+        self.bsp.closestnodes((unitlocation[0], unitlocation[1]), unitlist)
 
         self.bsp.graph.deletevertex(sizey - 1)
         self.bsp.graph.deletevertex(sizey - 2)
@@ -272,106 +274,110 @@ class MapGraph():
 
         for x in unitlist:
             if x == sizey - 1 or x == sizey - 2:
-                #print("click visible")
+                # print("click visible")
                 values = []
-                values.append((clicklocation[0],clicklocation[1]))
-                #print(time.time() - starttime)
+                values.append((clicklocation[0], clicklocation[1]))
+                # print(time.time() - starttime)
                 return values
-        self.bsp.closestnodes((clicklocation[0],clicklocation[1]), clicklist)
-        #now add 2 vertices and all edges connecting visible vertices to main graph
+        self.bsp.closestnodes((clicklocation[0], clicklocation[1]), clicklist)
+        # now add 2 vertices and all edges connecting visible vertices to main graph
         originalsize = len(self.adjlist.vtable)
-        self.adjlist.addvertex(unitlocation[0],unitlocation[1])
-        self.adjlist.addvertex(clicklocation[0],clicklocation[1])
+        self.adjlist.addvertex(unitlocation[0], unitlocation[1])
+        self.adjlist.addvertex(clicklocation[0], clicklocation[1])
         size = len(self.adjlist.vtable) - 1
         size2 = len(self.adjlist.vtable) - 2
         for x in unitlist:
             if x < originalsize:
-                self.adjlist.addedge(size2,x)
+                self.adjlist.addedge(size2, x)
         for x in clicklist:
             if x < originalsize:
-                self.adjlist.addedge(size,x)
+                self.adjlist.addedge(size, x)
 
-        #vertices added to graph call shortest path algorithm
+        # vertices added to graph call shortest path algorithm
         l = []
         self.GetShortestPath(size2, size, l)
 
-        #l has the indices to path vertices in vtable
+        # l has the indices to path vertices in vtable
         values = []
         for x in l:
-            val = (self.adjlist.vtable[x].pos[0],self.adjlist.vtable[x].pos[1])
+            val = (self.adjlist.vtable[x].pos[0], self.adjlist.vtable[x].pos[1])
             values.append(val)
-        #remove from graph
+        # remove from graph
         self.adjlist.deletevertex(size)
         self.adjlist.deletevertex(size2)
-        #print(time.time() - starttime)
+        # print(time.time() - starttime)
         return values
 
     def indexclicked(self, worldcoords):
-        clickcircle = (worldcoords[0],worldcoords[1], 20)
-        for x in range(0,len(self.adjlist.vtable)):
-            if mathfuncs.mathfuncs.pointcirclecollision((self.adjlist.vtable[x].pos[0],self.adjlist.vtable[x].pos[1]), clickcircle):
+        clickcircle = (worldcoords[0], worldcoords[1], 20)
+        for x in range(0, len(self.adjlist.vtable)):
+            if mathfuncs.mathfuncs.pointcirclecollision((self.adjlist.vtable[x].pos[0], self.adjlist.vtable[x].pos[1]),
+                                                        clickcircle):
                 return x
         return -1
 
     def renderbsp(self, display_render, map):
-        #draw bsp vertices
-        color = (0,0,0)
+        # draw bsp vertices
+        color = (0, 0, 0)
         for vertex in self.adjlist.vtable:
-            color = (0,0,0)
+            color = (0, 0, 0)
             if vertex.highlight:
-                color = (0,0,255)
-            pygame.draw.circle(display_render, color,(int(round(vertex.pos[0])) - map._cameraposition[0],
-                                int(round(vertex.pos[1])) - map._cameraposition[1]), 10, 0)
-        #draw bsp edges
-        color = (0,0,0)
-        for y in range(0,len(self.adjlistbsp.adjlist)):
-            p1 = (self.adjlistbsp.vtable[y].pos[0] - map._cameraposition[0], self.adjlistbsp.vtable[y].pos[1] - map._cameraposition[1])
-            for x in range(0,len(self.adjlistbsp.adjlist[y])):
+                color = (0, 0, 255)
+            pygame.draw.circle(display_render, color, (int(round(vertex.pos[0])) - map._cameraposition[0],
+                                                       int(round(vertex.pos[1])) - map._cameraposition[1]), 10, 0)
+        # draw bsp edges
+        color = (0, 0, 0)
+        for y in range(0, len(self.adjlistbsp.adjlist)):
+            p1 = (self.adjlistbsp.vtable[y].pos[0] - map._cameraposition[0],
+                  self.adjlistbsp.vtable[y].pos[1] - map._cameraposition[1])
+            for x in range(0, len(self.adjlistbsp.adjlist[y])):
                 p2 = (self.adjlistbsp.vtable[self.adjlistbsp.adjlist[y][x][0]].pos[0] - map._cameraposition[0],
                       self.adjlistbsp.vtable[self.adjlistbsp.adjlist[y][x][0]].pos[1] - map._cameraposition[1])
-                color = (0,0,0)
-                if self.adjlistbsp.vtable[y].highlight and self.adjlistbsp.vtable[self.adjlistbsp.adjlist[y][x][0]].highlight:
-                    color = (0,0,255)
-                pygame.draw.line(display_render,color, p1, p2)
+                color = (0, 0, 0)
+                if self.adjlistbsp.vtable[y].highlight and self.adjlistbsp.vtable[
+                    self.adjlistbsp.adjlist[y][x][0]].highlight:
+                    color = (0, 0, 255)
+                pygame.draw.line(display_render, color, p1, p2)
 
-        #self.bsp.render(display_render, map)
+        # self.bsp.render(display_render, map)
 
     def render(self, display_render, map):
-        #draw vertices
-        color = (255,255,0)
+        # draw vertices
+        color = (255, 255, 0)
         for vertex in self.adjlist.vtable:
-            color = (255,255,0)
+            color = (255, 255, 0)
             if vertex.highlight:
-                color = (0,0,255)
-            pygame.draw.circle(display_render, color,(int(round(vertex.pos[0])) - map._cameraposition[0],
-                                int(round(vertex.pos[1])) - map._cameraposition[1]), 10, 0)
-        #draw edges
-        color = (255,255,0)
-        for y in range(0,len(self.adjlist.adjlist)):
-            p1 = (self.adjlist.vtable[y].pos[0] - map._cameraposition[0], self.adjlist.vtable[y].pos[1] - map._cameraposition[1])
-            for x in range(0,len(self.adjlist.adjlist[y])):
+                color = (0, 0, 255)
+            pygame.draw.circle(display_render, color, (int(round(vertex.pos[0])) - map._cameraposition[0],
+                                                       int(round(vertex.pos[1])) - map._cameraposition[1]), 10, 0)
+        # draw edges
+        color = (255, 255, 0)
+        for y in range(0, len(self.adjlist.adjlist)):
+            p1 = (self.adjlist.vtable[y].pos[0] - map._cameraposition[0],
+                  self.adjlist.vtable[y].pos[1] - map._cameraposition[1])
+            for x in range(0, len(self.adjlist.adjlist[y])):
                 p2 = (self.adjlist.vtable[self.adjlist.adjlist[y][x][0]].pos[0] - map._cameraposition[0],
                       self.adjlist.vtable[self.adjlist.adjlist[y][x][0]].pos[1] - map._cameraposition[1])
-                color = (255,255,0)
+                color = (255, 255, 0)
                 if self.adjlist.vtable[y].highlight and self.adjlist.vtable[self.adjlist.adjlist[y][x][0]].highlight:
-                    color = (0,0,255)
-                pygame.draw.line(display_render,color, p1, p2)
+                    color = (0, 0, 255)
+                pygame.draw.line(display_render, color, p1, p2)
 
     def GetShortestPath(self, s, e, l):
-        #clear highlight for new path
+        # clear highlight for new path
         for vertex in self.adjlist.vtable:
             vertex.highlight = False
 
-        #s = 10
-        #e = 15
-        #starttime = time.time_ns()
-        self.Astar(self.adjlist,s,e)
-        #print(time.time_ns() - starttime)
-        #self.adjlist.print()
-        #starttime = time.time_ns()
-        #self.Astar(self.adjlist,s,e)
-        #print(time.time_ns() - starttime)
-        #self.adjlist.print()
+        # s = 10
+        # e = 15
+        # starttime = time.time_ns()
+        self.Astar(self.adjlist, s, e)
+        # print(time.time_ns() - starttime)
+        # self.adjlist.print()
+        # starttime = time.time_ns()
+        # self.Astar(self.adjlist,s,e)
+        # print(time.time_ns() - starttime)
+        # self.adjlist.print()
 
         index = self.adjlist.vtable[e].parent
         l.append(e)
@@ -379,15 +385,15 @@ class MapGraph():
             l.append(index)
             index = self.adjlist.vtable[index].parent
         l.reverse()
-        #print(l)
+        # print(l)
 
-        #highlight vertex on path
+        # highlight vertex on path
         self.adjlist.vtable[s].highlight = True
         for x in l:
             self.adjlist.vtable[x].highlight = True
 
     def Dijkstra(self, G, s, e):
-        #initialize everything
+        # initialize everything
         for x in G.vtable:
             x.found = False
             x.finished = False
@@ -395,34 +401,34 @@ class MapGraph():
             x.d = 10000000
         G.vtable[s].d = 0
 
-        #set up queue
+        # set up queue
         Q = PriorityQueue.PriorityQueue()
         Q.MaxHeapInsert(G.vtable[s])
 
-        #main loop
+        # main loop
         while Q.heapsize > 0:
             V = Q.HeapExtractMax()
             G.vtable[V.index].finished = True
 
-            #the end is finished thats all we need to know, leave
+            # the end is finished thats all we need to know, leave
             if V.index == e:
                 return
 
-            for neighbor in G.adjlist[V.index]: #neighbor = tuple(index, weight)
+            for neighbor in G.adjlist[V.index]:  # neighbor = tuple(index, weight)
                 if G.vtable[neighbor[0]].finished == False:
                     if G.vtable[neighbor[0]].d > V.d + neighbor[1]:
                         G.vtable[neighbor[0]].d = V.d + neighbor[1]
                         G.vtable[neighbor[0]].parent = V.index
                         if G.vtable[neighbor[0]].found:
-                            Q.HeapIncreaseKey(Q.VtoH[neighbor[0]],G.vtable[neighbor[0]])
+                            Q.HeapIncreaseKey(Q.VtoH[neighbor[0]], G.vtable[neighbor[0]])
                         else:
                             Q.MaxHeapInsert(G.vtable[neighbor[0]])
                             G.vtable[neighbor[0]].found = True
 
-    #same as dijkstra but is smarter about distance, 1 line difference
+    # same as dijkstra but is smarter about distance, 1 line difference
     def Astar(self, G, s, e):
         endpos = G.vtable[e].pos
-        #initialize everything
+        # initialize everything
         for x in G.vtable:
             x.found = False
             x.finished = False
@@ -430,31 +436,31 @@ class MapGraph():
             x.d = 10000000
         G.vtable[s].d = 0
 
-        #set up queue
+        # set up queue
         Q = PriorityQueue.PriorityQueue()
         Q.MaxHeapInsert(G.vtable[s])
 
-        #main loop
+        # main loop
         while Q.heapsize > 0:
             V = Q.HeapExtractMax()
             G.vtable[V.index].finished = True
 
-            #the end is finished thats all we need to know, leave
+            # the end is finished thats all we need to know, leave
             if V.index == e:
                 return
 
-            for neighbor in G.adjlist[V.index]: #neighbor = tuple(index, weight)
+            for neighbor in G.adjlist[V.index]:  # neighbor = tuple(index, weight)
                 if G.vtable[neighbor[0]].finished == False:
-                    #store distance in vertex, if its -1 then use the magnitude function else just use that number, also see if i dont have to sqrt it?
-                    if G.vtable[neighbor[0]].d > V.d + neighbor[1] + mathfuncs.mathfuncs.Magnitude((G.vtable[neighbor[0]].pos[0] - endpos[0],G.vtable[neighbor[0]].pos[1] - endpos[1])):
+                    # store distance in vertex, if its -1 then use the magnitude function else just use that number, also see if i dont have to sqrt it?
+                    if G.vtable[neighbor[0]].d > V.d + neighbor[1] + mathfuncs.mathfuncs.Magnitude(
+                            (G.vtable[neighbor[0]].pos[0] - endpos[0], G.vtable[neighbor[0]].pos[1] - endpos[1])):
                         G.vtable[neighbor[0]].d = V.d + neighbor[1]
                         G.vtable[neighbor[0]].parent = V.index
                         if G.vtable[neighbor[0]].found:
-                            Q.HeapIncreaseKey(Q.VtoH[neighbor[0]],G.vtable[neighbor[0]])
+                            Q.HeapIncreaseKey(Q.VtoH[neighbor[0]], G.vtable[neighbor[0]])
                         else:
                             Q.MaxHeapInsert(G.vtable[neighbor[0]])
                             G.vtable[neighbor[0]].found = True
-
 
     def createmap(self):
 
@@ -572,7 +578,7 @@ class MapGraph():
         self.adjlist.addedge(32, 36)
         self.adjlist.addedge(33, 34)
         self.adjlist.addedge(35, 36)
-        #BSP adjacency list
+        # BSP adjacency list
         self.adjlistbsp.addvertex(463.500000, 578.000000)
         self.adjlistbsp.addvertex(327.000000, 694.000000)
         self.adjlistbsp.addvertex(291.000000, 880.000000)
@@ -661,8 +667,7 @@ class MapGraph():
         self.adjlist.addedge(4, 7)
         self.adjlist.addedge(6, 7)"""
 
-
-        #BSP graph
+        # BSP graph
         """self.adjlist.addvertex(459.000000, 568.000000)
         self.adjlist.addvertex(322.500000, 702.000000)
         self.adjlist.addvertex(286.500000, 878.000000)
@@ -754,7 +759,6 @@ class MapGraph():
         self.adjlist.addedge(42, 43)
         self.adjlist.addedge(43, 44)
         self.adjlist.addedge(44, 45)"""
-
 
         """ map graph
         self.adjlist.addvertex(456.000000, 567.000000)

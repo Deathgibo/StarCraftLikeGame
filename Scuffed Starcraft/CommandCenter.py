@@ -2,17 +2,18 @@ import Building
 import pygame
 import numpy as np
 
+
 class CommandCenter(Building.Building):
     def __init__(self, x, y, imgsurf):
         super().__init__(x, y, imgsurf)
-        #render
+        # render
         xsize = 200
         ysize = 200
-        self.rect = pygame.Rect(x - xsize/2,y - ysize/2,xsize,ysize)
+        self.rect = pygame.Rect(x - xsize / 2, y - ysize / 2, xsize, ysize)
         self.img = imgsurf
-        #physics
-        self.circlecenter = np.array([int(x),int(y)])
-        self.radius = int(xsize/5)
+        # physics
+        self.circlecenter = np.array([int(x), int(y)])
+        self.radius = int(xsize / 5)
 
     def update(self, input):
         self.handle_input(input)
