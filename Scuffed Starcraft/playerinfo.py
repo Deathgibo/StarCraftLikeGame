@@ -58,7 +58,7 @@ class playerinfo():
                     self._selectedbuildinglist.append(building)
             # units
             # starttime = time.time_ns()
-            """for unitz in self._selectedlist:
+            for unitz in self._selectedlist:
                 unitz.selected = False
             self._selectedlist.clear()
 
@@ -76,7 +76,7 @@ class playerinfo():
 
             for unitz in self._selectedlist:
                 unitz.selected = True
-            """
+            
             # starttime = time.time_ns()
             for unit in playerunits:
                 unit.selected = False

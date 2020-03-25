@@ -8,6 +8,9 @@ class Building():
         # other
         self.buildingunit = False
         self.selected = False
+        #stats
+        self.health = 0
+        self.maxhealth = 0
 
     def update(self, input):
         self.handle_input(input)

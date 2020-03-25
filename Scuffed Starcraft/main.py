@@ -70,6 +70,7 @@ class App():
 
         # Initialize Overlay (UI)
         self.overlay = Overlay.Overlay()
+        self.overlay.load_media(self._cwdpath)
 
         # Initialize Cursor/Map/Sounds and other general media
         self.load_media()
@@ -161,12 +162,12 @@ class App():
         self._mineralimg = pygame.image.load(os.path.join(self._cwdpath, "Images", "mineralt.png")).convert_alpha()
 
         # Background Map (stored in map object)
-
-        # Directional Green Cursor
         self.map._mapimage = pygame.image.load(
             os.path.join(self._cwdpath, "Images", "NeoPlanetSx2.png")).convert()  # bigmap3.jpg
         self._commandcenterimg = pygame.image.load(
             os.path.join(self._cwdpath, "Images", "commandcentert.png")).convert_alpha()
+        
+        # Directional Green Cursor
         self._mouseimg1 = pygame.image.load(os.path.join(self._cwdpath, "Images", "mouse1t.png")).convert_alpha()
         self._mouseimg2 = pygame.image.load(os.path.join(self._cwdpath, "Images", "mouse2t.png")).convert_alpha()
         self._mouseimg3 = pygame.image.load(os.path.join(self._cwdpath, "Images", "mouse3t.png")).convert_alpha()
@@ -176,11 +177,7 @@ class App():
         self._mouseimglist = [self._mouseimg1, self._mouseimg2, self._mouseimg3, self._mouseimg4, self._mouseimg5]
         self._mouseimgcurrent = self._mouseimg1
         self.sound_esketit = pygame.mixer.Sound(os.path.join(self._cwdpath, "Sounds", "esketit.wav"))
-
-        # Overlay
-        self.overlay.overlayimage = pygame.image.load(
-            os.path.join(self._cwdpath, "Images/Overlay", "CleanBottomOverlay.png")).convert_alpha()
-
+        
     def on_update(self):
         # KEEP input update at top
         # update input
@@ -312,9 +309,11 @@ class App():
         if self._input.keysframe[pygame.K_MINUS][0]:
             self.overlay_enable = not self.overlay_enable
         if self.overlay_enable:
-            self.overlay.render(self._display_surf)
-
+            self.overlay.renderBottomOverlay(self._display_surf)
+            self.overlay.renderResources(self._display_surf, self._playerinfo)
             self.overlay.renderGameClock(self._display_surf)
+            self.overlay.renderSelectedItem(self._display_surf, self._playerinfo._selectedlist, self._playerinfo._selectedbuildinglist)
+            #self.overlay.renderTemplate(self._display_surf) #If you want to see boxes
 
             # UI
             # mini map

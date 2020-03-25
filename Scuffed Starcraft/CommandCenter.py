@@ -14,6 +14,9 @@ class CommandCenter(Building.Building):
         # physics
         self.circlecenter = np.array([int(x), int(y)])
         self.radius = int(xsize / 5)
+        #stats
+        self.health = 1500
+        self.maxhealth = 1500
 
     def update(self, input):
         self.handle_input(input)
