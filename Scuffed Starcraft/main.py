@@ -353,30 +353,28 @@ class App():
         text_surface = font.render(text, True, c)
         self._display_surf.blit(text_surface, (width_loc, height_loc))
 
+    def draw_rect(self, fill_color, border_color, rect, border=1):
+        self._display_surf.fill(border_color, rect)
+        self._display_surf.fill(fill_color, rect.inflate(-border * 2, -border * 2))
+
     def menu(self):
-        '''display main menu'''
+        # Display Start Menu
 
         title = pygame.image.load(os.path.join(self._cwdpath, "Images", "Title.png")).convert_alpha()
-        # title = pygame.transform.scale(title, (WINDOWWIDTH, 81 * 2))
         background = pygame.image.load(os.path.join(self._cwdpath, "Images", "StartMenu.png")).convert()
         background_rect = background.get_rect()
 
-        # display instructions for game
-        # arrow_keys = pygame.image.load(os.path.join(self._cwdpath, "Images", "")).convert_alpha()
-        # arrow_keys = pygame.transform.scale(arrow_keys, (150, 85))
-        # spacebar = pygame.image.load(os.path.join(self._cwdpath, "Images", 'spacebar.png')).convert_alpha()
-        # spacebar = pygame.transform.scale(spacebar, (150, 50))
-
         self._display_surf.blit(background, background_rect)
         self._display_surf.blit(title, (250, 40))
-        # self._display_surf.blit(arrow_keys, (225, 400))
-        # self._display_surf.blit(spacebar, (225, 500))
-        pygame.draw.rect(self._display_surf, (0, 0, 255), (240, 294, 321, 35))
-        pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 345, 240, 35))
-        self.draw_text("PRESS [ENTER] TO BEGIN", 24, 240, 294, (255, 255, 255))
-        self.draw_text("PRESS [Q] TO QUIT", 24, 280, 345, (255, 255, 255))
 
-        # game instructions
+        # Menu Options
+        # pygame.draw.rect(screen, [red, green, blue], [left, top, width, height], filled)
+        top_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (240, 294, 321, 35))
+        bottom_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 345, 240, 35))
+        self.draw_rect((0, 0, 255), (255, 255, 255), top_rect, 2)
+        self.draw_rect((0, 0, 255), (255, 255, 255), bottom_rect, 2)
+        self.draw_text("PRESS [ENTER] TO BEGIN", 24, 245, 299, (255, 255, 255))
+        self.draw_text("PRESS [Q] TO QUIT", 24, 285, 350, (255, 255, 255))
 
         pygame.display.update()
 
@@ -392,13 +390,79 @@ class App():
                 pygame.quit()
                 sys.exit()
 
+    def help(self):
+        title = pygame.image.load(os.path.join(self._cwdpath, "Images", "HelpScreenTitle.png")).convert_alpha()
+
+        while True:
+            event = pygame.event.poll()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    break
+                elif event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+            self._display_surf.fill((0, 0, 0))
+            self._display_surf.blit(title, (250, 40))
+
+            # Menu Options
+            # pygame.draw.rect(screen, [red, green, blue], [left, top, width, height], filled)
+            top_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (240, 214, 380, 35))
+            bottom_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 265, 240, 35))
+            self.draw_rect((0, 0, 255), (255, 255, 255), top_rect, 2)
+            self.draw_rect((0, 0, 255), (255, 255, 255), bottom_rect, 2)
+            self.draw_text("PRESS [ENTER] TO CONTINUE", 24, 245, 219, (255, 255, 255))
+            self.draw_text("PRESS [Q] TO QUIT", 24, 285, 270, (255, 255, 255))
+
+            self.draw_text("Here are the instructions", 24, 145, 330, (255, 255, 255))
+
+            pygame.display.update()
+
+    def pause(self):
+        paused = True
+        title = pygame.image.load(os.path.join(self._cwdpath, "Images", "PauseTitle.png")).convert_alpha()
+
+        while paused:
+            event = pygame.event.poll()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    paused = False
+                elif event.key == pygame.K_h:
+                    self.help()
+                elif event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+            elif event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+            self._display_surf.fill((0, 0, 0))
+            self._display_surf.blit(title, (250, 40))
+
+            # Menu Options
+            # pygame.draw.rect(screen, [red, green, blue], [left, top, width, height], filled)
+            top_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (240, 294, 380, 35))
+            help_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 345, 260, 35))
+            bottom_rect = pygame.draw.rect(self._display_surf, (0, 0, 255), (280, 395, 240, 35))
+            self.draw_rect((0, 0, 255), (255, 255, 255), top_rect, 2)
+            self.draw_rect((0, 0, 255), (255, 255, 255), help_rect, 2)
+            self.draw_rect((0, 0, 255), (255, 255, 255), bottom_rect, 2)
+            self.draw_text("PRESS [ENTER] TO CONTINUE", 24, 245, 299, (255, 255, 255))
+            self.draw_text("PRESS [H] FOR HELP", 24, 285, 350, (255, 255, 255))
+            self.draw_text("PRESS [Q] TO QUIT", 24, 285, 400, (255, 255, 255))
+
+            pygame.display.update()
+
     def on_execute(self):
         # Initialize the window, camera, media and other entities. Return false if
         # there is an error on initiating Mixer.
         if self.on_init() == False:
             self._running = False
 
-        start = 0
+        start = True
         # Main Game Running
         while (self._running):
             self._input.reset()
@@ -406,11 +470,9 @@ class App():
                 self.on_event(event)
 
             # Start Game Menu
-            if start == 1:
+            if start:
                 self.menu()
-                start += 1
-            elif start == 0:
-                start += 1
+                start = False
 
             self.on_update()
             self.on_render()
@@ -464,6 +526,8 @@ class App():
                 pygame.display.update()
             if event.key == pygame.K_ESCAPE:
                 self.on_exit()
+            if event.key == pygame.K_p:
+                self.pause()
 
         elif event.type == MOUSEMOTION:  # event.buttons, event.pos, event.rel
             self._input.mouseposition = event.pos
