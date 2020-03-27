@@ -9,16 +9,26 @@ of a tuple(index, weight) index is the index in the vtable and weight is any val
 A lot of the time references are made to vtable passing indices around.
 
 """
-
-
-# This is a data structure to hold graphs
+#This is a data structure to hold graphs
 class AdjacencyList():
     def __init__(self):
-        self.vtable = []  # list that holds vertices
-        self.adjlist = []  # list that holds edge indexes, adjlist[0] gives list of vertices connected to vtable[0]
+        self.vtable = [] #list that holds vertices
+        self.adjlist = [] #list that holds edge indexes, adjlist[0] gives list of vertices connected to vtable[0]
+
+    def doesedgeexist(self, index1, index2):
+        if index1 > len(self.adjlist) - 1 or index2 > len(self.adjlist):
+            return False
+        for value in self.adjlist[index1]:
+            if value[0] == index2:
+                return True
+        return False
+
+    def addsize(self, indexneeded): #adds size to tree list if needed and sets everything to None
+        for x in range(0, indexneeded + 1 - len(self.vtable)):
+            self.addvertex(0,0)
 
     def addvertex(self, x, y):
-        v = PriorityQueue.Vertex(x, y)
+        v = PriorityQueue.Vertex(x,y)
         self.vtable.append(v)
         v.index = len(self.vtable) - 1
         self.adjlist.append([])
@@ -28,31 +38,46 @@ class AdjacencyList():
         self.adjlist.pop(index)
         for list in self.adjlist:
             counter = 0
-            for x in range(0, len(list)):
+            for x in range(0,len(list)):
                 if list[x - counter][0] == index:
                     list.pop(x)
                     counter = counter + 1
                 elif list[x - counter][0] > index:
-                    list[x - counter] = (list[x - counter][0] - 1, list[x - counter][1])
+                    list[x - counter] = (list[x - counter][0] - 1,list[x-counter][1])
 
     def addedge(self, index1, index2):
-        distance = mathfuncs.mathfuncs.Magnitude((self.vtable[index1].pos[0] - self.vtable[index2].pos[0],
-                                                  self.vtable[index1].pos[1] - self.vtable[index2].pos[1]))
-        self.adjlist[index1].append((index2, distance))
-        self.adjlist[index2].append((index1, distance))
+        distance = mathfuncs.mathfuncs.Magnitude((self.vtable[index1].pos[0] - self.vtable[index2].pos[0],self.vtable[index1].pos[1] - self.vtable[index2].pos[1]))
+        self.adjlist[index1].append((index2,distance))
+        self.adjlist[index2].append((index1,distance))
+
+    def addedgenormal(self, index1, index2 , n = None):
+        if n is None:
+            normal = mathfuncs.mathfuncs.calculatenormal(self.vtable[index1].pos[0], self.vtable[index1].pos[1], self.vtable[index2].pos[0], self.vtable[index2].pos[1])
+        else:
+            normal = n
+        self.adjlist[index1].append((index2,normal))
+        self.adjlist[index2].append((index1,normal))
+
+    def getedgeweightnormal(self, index1, index2):
+        if index1 > len(self.adjlist) - 1 or index2 > len(self.adjlist):
+            return (0,0)
+        for value in self.adjlist[index1]:
+            if value[0] == index2:
+                return value[1]
+        return (0,0)
 
     def deleteedge(self, index1, index2):
-        # go to index1 in adjlist and delete index2, then vice versa
+        #go to index1 in adjlist and delete index2, then vice versa
         check1 = False
         counter = 0
-        for x in range(0, len(self.adjlist[index1])):
+        for x in range(0,len(self.adjlist[index1])):
             if self.adjlist[index1][x - counter][0] == index2:
                 check1 = True
                 self.adjlist[index1].pop(x - counter)
                 counter = counter + 1
         check2 = False
         counter = 0
-        for x in range(0, len(self.adjlist[index2])):
+        for x in range(0,len(self.adjlist[index2])):
             if self.adjlist[index2][x - counter][0] == index1:
                 self.adjlist[index2].pop(x - counter)
                 check2 = True
@@ -63,11 +88,12 @@ class AdjacencyList():
         if not check1 and not check2:
             print("edge doesnt exist")
 
+
     def print(self):
         print("---------------VTable---------------")
         counter = 0
         for x in self.vtable:
-            print("[%d | (%f, %f) | %s | %d | " % (counter, x.pos[0], x.pos[1], x.finished, x.d), end='')
+            print("[%d | (%f, %f) | %s | %d | " % (counter, x.pos[0],x.pos[1], x.finished, x.d), end='')
             if x.parent is None:
                 print("None ]")
             else:
@@ -78,10 +104,9 @@ class AdjacencyList():
         for l in self.adjlist:
             print("[%d ]" % counter, end='')
             for x in l:
-                print("| (%d, %f) " % (x[0], x[1]), end='')
+                print("| (%d, %f) " % (x[0],x[1]), end='')
             print("")
             counter = counter + 1
-
 
 """
 def Dijkstra(G, s, e):
