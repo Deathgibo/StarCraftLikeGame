@@ -40,7 +40,7 @@ class Overlay:
             os.path.join(self._cwdpath,"Images/Overlay","Robot_Profile.png")).convert_alpha()
         self.workerProfile = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","Worker_Profile.png")).convert_alpha()
-        
+
     def renderBottomOverlay(self, displaysurf):
         # Bottom_Overlay (Height is random - just looks nice)
         overlay_height = int(displaysurf.get_height() / 3)  # Take up bottom 1/3 of screen
@@ -78,7 +78,7 @@ class Overlay:
             # Mineral Sprite (Yellow)
             self.mineralOverlay_trans = pygame.transform.scale(self.mineralOverlay,(20, 20))
             displaysurf.blit(self.mineralOverlay_trans, (530, 20))
-            
+
             # Mineral Amount (Orange)
             font = pygame.font.SysFont(None, 26)
             img = font.render(str(playerinfo.resources), True, (0, 0, 0))
@@ -86,7 +86,7 @@ class Overlay:
             font = pygame.font.SysFont(None, 24)
             img = font.render(str(playerinfo.resources), True, (255, 255, 255))
             displaysurf.blit(img, (556, 21))
-        
+
             # Vespene Sprite (blue)
             self.vespeneOverlay_trans = pygame.transform.scale(self.vespeneOverlay,(20, 20))
             displaysurf.blit(self.vespeneOverlay_trans, (615, 20))
@@ -111,7 +111,7 @@ class Overlay:
             img = font.render(str(playerinfo.population), True, (255, 255, 255))
             displaysurf.blit(img, (726, 21))
 
-    def renderSelectedItem(self, displaysurf, selectedEntityList, selectedBuildingList):    
+    def renderSelectedItem(self, displaysurf, selectedEntityList, selectedBuildingList):
         # Set-up dimensions for other items based on screen size
         if displaysurf.get_rect().size == (800, 600):
 
@@ -122,8 +122,8 @@ class Overlay:
                 displaysurf.blit(self.robotProfile_trans, (579, 480))
                 return
 
-            #Selected one entity (troop) 
-            #Right now multiple due to selectedEntityList bug 
+            #Selected one entity (troop)
+            #Right now multiple due to selectedEntityList bug
             elif len(selectedEntityList) != 0 and len(selectedBuildingList) == 0:
                 #Grab first item in list as the figure-head stat to show
                 classSelected = selectedEntityList[0].__class__.__name__
@@ -133,12 +133,12 @@ class Overlay:
                 printHitpoints = str(selectedEntityList[0].health) + "/" + str(selectedEntityList[0].maxhealth)
                 img = font.render(printHitpoints, True, (255, 255, 255))
                 displaysurf.blit(img, (250, 569))
-                
+
                 # Selectable Name Area (In Middle to right of hologram)
                 font = pygame.font.SysFont(None, 26)
                 img = font.render(classSelected, True, (255, 255, 255))
                 displaysurf.blit(img, (318, 494))
-                
+
                 #Listed Alphabetically (Unit Specific items like Hologram, Profiles, and Buttons(eventually!))
                 #####Entities
                 if classSelected == "Marauder":
@@ -177,7 +177,7 @@ class Overlay:
                 printHitpoints = str(selectedBuildingList[0].health) + "/" + str(selectedBuildingList[0].maxhealth)
                 img = font.render(printHitpoints, True, (255, 255, 255))
                 displaysurf.blit(img, (250, 569))
-                
+
                 # Selectable Name Area (In Middle to right of hologram)
                 font = pygame.font.SysFont(None, 26)
                 img = font.render(classSelected, True, (255, 255, 255))
@@ -338,4 +338,3 @@ class Overlay:
             genericButtonWidth = 180
             pygame.draw.rect(displaysurf, (255, 0, 0), (
             22, displaysurf.get_height() - genericButtonHeight - 12, genericButtonWidth, genericButtonHeight))
-
