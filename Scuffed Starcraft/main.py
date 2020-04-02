@@ -566,6 +566,8 @@ class App():
                 self._input.leftclick = True
                 self._input.leftclickframe = True
                 self._input.mouseclickposition = event.pos
+                self.overlay.buttonHandle(self._display_surf, self._input, self._playerinfo._selectedlist, self._playerinfo._selectedbuildinglist, self._entitylist, self._entityquadtree)
+
             elif event.button == 2: #m
                 pass
             elif event.button == 3: #r

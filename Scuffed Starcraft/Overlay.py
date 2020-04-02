@@ -6,7 +6,7 @@ class Overlay:
     def __init__(self):
         self._cwdpath = None    #Same path as in main
         self.start_time = 0     #Used to keep track of when game started AFTER menu (milliseconds)
-        self.printMinutes = 0   #Keep Track of minutes played in-game,
+        self.printMinutes = 0   #Keep Track of minutes played in-game
 
     def load_media(self, cwdpath):
         self._cwdpath = cwdpath
@@ -114,7 +114,6 @@ class Overlay:
     def renderSelectedItem(self, displaysurf, selectedEntityList, selectedBuildingList):
         # Set-up dimensions for other items based on screen size
         if displaysurf.get_rect().size == (800, 600):
-
             #Nothing chosen
             if len(selectedEntityList) == 0 and len(selectedBuildingList) == 0:
                 #Profile Area (Unit Chose Image)
@@ -122,8 +121,7 @@ class Overlay:
                 displaysurf.blit(self.robotProfile_trans, (579, 480))
                 return
 
-            #Selected one entity (troop)
-            #Right now multiple due to selectedEntityList bug
+            #Selected entities (troop)
             elif len(selectedEntityList) != 0 and len(selectedBuildingList) == 0:
                 #Grab first item in list as the figure-head stat to show
                 classSelected = selectedEntityList[0].__class__.__name__
@@ -178,12 +176,12 @@ class Overlay:
                 img = font.render(printHitpoints, True, (255, 255, 255))
                 displaysurf.blit(img, (250, 569))
 
-                # Selectable Name Area (In Middle to right of hologram)
-                font = pygame.font.SysFont(None, 26)
-                img = font.render(classSelected, True, (255, 255, 255))
-                displaysurf.blit(img, (318, 494))
-
                 if classSelected == "CommandCenter":
+                    #Overwrite Name Area to add a space in Command Center
+                    font = pygame.font.SysFont(None, 26)
+                    img = font.render("Command Center", True, (255, 255, 255))
+                    displaysurf.blit(img, (318, 494))
+
                     # Hologram Area (Unit Chose Green Image in Middle)
                     self.commandCenterHolo_trans = pygame.transform.scale(self.commandCenterHolo,(70, 70))
                     displaysurf.blit(self.commandCenterHolo_trans, (233, 494))
@@ -191,6 +189,26 @@ class Overlay:
                     #Profile Area (Unit Chose Image)
                     self.robotProfile_trans = pygame.transform.scale(self.robotProfile,(50, 115))
                     displaysurf.blit(self.robotProfile_trans, (579, 480))
+
+                    #Add Buildable Worker Image
+                    self.button1Image = pygame.image.load(os.path.join(self._cwdpath,"Images/Overlay","CommandCenter_Worker_Button_Buyable.png")).convert_alpha()
+                    self.button1Image_trans = pygame.transform.scale(self.button1Image,(26, 26))
+                    displaysurf.blit(self.button1Image_trans, (643, 467))
+
+    def buttonHandle(self, displaysurf, input, selectedEntityList, selectedBuildingList, entityList, entityquadtree):
+
+        self.scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
+
+        if len(selectedEntityList) == 0 and len(selectedBuildingList) == 1:
+            #Grab first item in list as the figure-head stat to show
+            classSelected = selectedBuildingList[0].__class__.__name__
+
+            if classSelected == "CommandCenter":
+                #Set-up button1
+                if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
+                    if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
+                        if input.leftclick == True:
+                            selectedBuildingList[0].buildWorker(entityList, self.scvsurf, entityquadtree)
 
     def renderTemplate(self, displaysurf):
         # Bottom_Overlay (Height is random - just looks nice)

@@ -99,6 +99,12 @@ class playerinfo():
             self._aclicked = False
         if input.leftclickletgo and self._firstclickmini:
             self._firstclickmini = False
+        
+        #Check if a unit is currently selected
+        if self._selectedlist:
+            #Removed selected unit from list when they die (changes overlay to no unit selected)
+            if self._selectedlist[0].health <= 0:
+                self._selectedlist.pop(0)
         #once we let go call a function to see what units we have
 
     def render(self, surface):

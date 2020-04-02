@@ -10,6 +10,9 @@ class Building():
         #stats
         self.health = 0
         self.maxhealth = 0
+        #map coords
+        self.x = x
+        self.y = y
 
     def update(self, input):
         self.handle_input(input)

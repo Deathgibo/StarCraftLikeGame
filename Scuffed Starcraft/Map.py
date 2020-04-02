@@ -116,13 +116,6 @@ class Map:
         #newimage = pygame.transform.scale(subimage,(displaysurf.get_width(),displaysurf.get_height()))
         displaysurf.blit(subimage,(0,0))
 
-    #ORIGINAL
-    # def renderminimap(self, displaysurf):
-    #     miniheight = 150
-    #     miniwidth = 150
-    #     minimapimg = pygame.transform.scale(self._mapimage,(miniheight,miniwidth))
-    #     displaysurf.blit(minimapimg,(displaysurf.get_width() - miniwidth,displaysurf.get_height() - miniheight))
-
     def renderminimap(self, displaysurf):
         #Set-up Minimap dimensions based on screen size
         if displaysurf.get_rect().size == (800,600):
