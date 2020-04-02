@@ -27,6 +27,8 @@ class Overlay:
         #####Troops
         self.marineHolo = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","Marine_Holo.png")).convert_alpha()
+        self.marauderHolo = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","Marauder_Holo.png")).convert_alpha()
         self.workerHolo = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","Worker_Holo.png")).convert_alpha()
         ######Buildings
@@ -34,6 +36,8 @@ class Overlay:
             os.path.join(self._cwdpath,"Images/Overlay","CommandCenter_Holo.png")).convert_alpha()
 
         #Profiles
+        self.marauderProfile = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","Marauder_Profile.png")).convert_alpha()
         self.marineProfile = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","Marine_Profile.png")).convert_alpha()
         self.robotProfile = pygame.image.load(
@@ -140,8 +144,13 @@ class Overlay:
                 #Listed Alphabetically (Unit Specific items like Hologram, Profiles, and Buttons(eventually!))
                 #####Entities
                 if classSelected == "Marauder":
-                    #I'll get it later, I made all holo's and button sizes the same
-                    pass
+                    # Hologram Area (Unit Chose Green Image in Middle)
+                    self.marauderHolo_trans = pygame.transform.scale(self.marauderHolo,(70, 70))
+                    displaysurf.blit(self.marauderHolo_trans, (233, 494))
+
+                    #Profile Area (Unit Chose Image)
+                    self.marauderProfile_trans = pygame.transform.scale(self.marauderProfile,(50, 115))
+                    displaysurf.blit(self.marauderProfile_trans, (579, 480))
 
                 elif classSelected == "Marine":
                     # Hologram Area (Unit Chose Green Image in Middle)
