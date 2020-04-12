@@ -538,10 +538,11 @@ class deadstate(entity_state):
     def __init__(self):
         pass
     def entry(self, unit, graph):
-        unit.alive = False
+        pass
     def update(self, unit, playerinfo, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         #play death animation
         #once done
         unit.alive = False
+        playerinfo.removepopulation(1)
     def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
         return None

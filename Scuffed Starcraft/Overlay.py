@@ -34,6 +34,16 @@ class Overlay:
         ######Buildings
         self.commandCenterHolo = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","CommandCenter_Holo.png")).convert_alpha()
+        self.barracksHolo = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","Barracks_Holo.png")).convert_alpha()
+
+        #Buttons
+        self.buildWorker = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","CommandCenter_Worker_Button_Buyable.png")).convert_alpha()
+        self.buildMarine = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","Barracks_Button_BuildMarine.png")).convert_alpha()
+        self.buildMarauder = pygame.image.load(
+            os.path.join(self._cwdpath,"Images/Overlay","Barracks_Button_BuildMarauder.png")).convert_alpha()
 
         #Profiles
         self.marauderProfile = pygame.image.load(
@@ -44,6 +54,14 @@ class Overlay:
             os.path.join(self._cwdpath,"Images/Overlay","Robot_Profile.png")).convert_alpha()
         self.workerProfile = pygame.image.load(
             os.path.join(self._cwdpath,"Images/Overlay","Worker_Profile.png")).convert_alpha()
+
+        #Units
+        self.maraudersurf = pygame.image.load(
+            os.path.join(self._cwdpath,"Images","maraudert.png")).convert_alpha()
+        self.marinesurf = pygame.image.load(
+            os.path.join(self._cwdpath,"Images","marine.png")).convert_alpha()
+        self.scvsurf = pygame.image.load(
+            os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
 
     def renderBottomOverlay(self, displaysurf):
         # Bottom_Overlay (Height is random - just looks nice)
@@ -200,23 +218,55 @@ class Overlay:
                     displaysurf.blit(self.robotProfile_trans, (579, 480))
 
                     #Add Buildable Worker Image
-                    self.button1Image = pygame.image.load(os.path.join(self._cwdpath,"Images/Overlay","CommandCenter_Worker_Button_Buyable.png")).convert_alpha()
-                    self.button1Image_trans = pygame.transform.scale(self.button1Image,(26, 26))
-                    displaysurf.blit(self.button1Image_trans, (643, 467))
+                    self.buildWorker_trans = pygame.transform.scale( self.buildWorker,(26, 26))
+                    displaysurf.blit(self.buildWorker_trans, (643, 467))
 
-    def buttonHandle(self, displaysurf, input, selectedEntityList, selectedBuildingList, entityList, entityquadtree):
+                if classSelected == "Barracks":
+                    #Overwrite Name Area
+                    font = pygame.font.SysFont(None, 26)
+                    img = font.render("Barracks", True, (255, 255, 255))
+                    displaysurf.blit(img, (318, 494))
 
-        self.scvsurf = pygame.image.load(os.path.join(self._cwdpath,"Images","scv2.png")).convert_alpha()
+                    # Hologram Area (Unit Chose Green Image in Middle)
+                    self.barracksHolo_trans = pygame.transform.scale(self.barracksHolo,(70, 70))
+                    displaysurf.blit(self.barracksHolo_trans, (233, 494))
 
-        if len(selectedEntityList) == 0 and len(selectedBuildingList) == 1:
+                    #Profile Area (Unit Chose Image)
+                    self.robotProfile_trans = pygame.transform.scale(self.robotProfile,(50, 115))
+                    displaysurf.blit(self.robotProfile_trans, (579, 480))
+
+                    #Add Buildable Marine Image
+                    self.buildMarine_trans = pygame.transform.scale(self.buildMarine,(26, 26))
+                    displaysurf.blit(self.buildMarine_trans, (643, 467))
+
+                    #Add Buildable Marauder Image
+                    self.buildMarauder_trans = pygame.transform.scale(self.buildMarauder,(26, 26))
+                    displaysurf.blit( self.buildMarauder_trans, (672, 467))
+
+    def buttonHandle(self, displaysurf, input, playerInfo, entityList, entityquadtree):
+        #Get building selected
+        if len(playerInfo._selectedlist) >= 0 and len(playerInfo._selectedbuildinglist) != 0:
             #Grab first item in list as the figure-head stat to show
-            self.classSelected = selectedBuildingList[0]
+            self.classSelected = playerInfo._selectedbuildinglist[0]
             if self.classSelected.__class__.__name__ == "CommandCenter":
-                #Set-up button1
+                #Set-up button1 (worker)
                 if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
                     if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
                         if input.leftclick == True:
-                            selectedBuildingList[0].buildWorker(entityList, self.scvsurf, entityquadtree)
+                            playerInfo._selectedbuildinglist[0].buildWorker(entityList, self.scvsurf, entityquadtree)
+                            playerInfo.givepopulation(1)
+            elif self.classSelected.__class__.__name__ == "Barracks":
+                #Set-up button1 (marine)
+                if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
+                    if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
+                        if input.leftclick == True:
+                            playerInfo._selectedbuildinglist[0].buildMarine(entityList, self.marinesurf, entityquadtree)
+                            playerInfo.givepopulation(1)
+                elif input.mouseclickposition[0] >= 672 and input.mouseclickposition[0] <= 698:
+                    if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
+                        if input.leftclick == True:
+                            playerInfo._selectedbuildinglist[0].buildMarauder(entityList, self.maraudersurf, entityquadtree)
+                            playerInfo.givepopulation(1)
 
     def renderTemplate(self, displaysurf):
         # Bottom_Overlay (Height is random - just looks nice)

@@ -26,6 +26,12 @@ class playerinfo():
     def giveresources(self, resource):
         self.resources = self.resources + resource
 
+    def givepopulation(self, population):
+        self.population = self.population + population
+
+    def removepopulation(self, population):
+        self.population = self.population - population
+
     def update(self, input, playerunits, map, displaysurf, playerbuildings, enemyunits, unitsquad, enemyunitsquad):
         #handle unit clicking and mouse drag
         worldcoords = map.windowtoworldtransform(input.mouseposition[0],input.mouseposition[1], displaysurf)

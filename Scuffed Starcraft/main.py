@@ -21,6 +21,7 @@ import Building
 import CommandCenter
 import Quadtree
 import MapGraph
+import Barracks
 
 class App():
     def __init__(self):
@@ -110,7 +111,9 @@ class App():
     def load_buildings(self):
         self._building_list = []
         building1 = CommandCenter.CommandCenter(900,700,self._commandcenterimg)
+        building2 = Barracks.Barracks(1200, 690, self._barracksimg)
         self._building_list.append(building1)
+        self._building_list.append(building2)
 
     def load_resources(self):
         #minerals
@@ -135,13 +138,16 @@ class App():
         worker2 = Worker.Worker(15,scvsurf,marinerect)
         self._entitylist = []
         self._entitylist.append(worker1)
+        self._playerinfo.givepopulation(1)
         self._entitylist.append(worker2)
+        self._playerinfo.givepopulation(1)
         thesize = 5
         #Fill entity List structure
         for x in range(0,thesize):
             marinerect = pygame.Rect(100,500 + x*30,50,50)
             entity1 = Marine.Marine(15,marinesurf,marinerect)
             self._entitylist.append(entity1)
+            self._playerinfo.givepopulation(1)
 
         #Initialize and fill the entity QuadTree
         self._entityquadtree = Quadtree.Quadtree()
@@ -170,6 +176,8 @@ class App():
             os.path.join(self._cwdpath, "Images", "NeoPlanetSx2.png")).convert()  # bigmap3.jpg
         self._commandcenterimg = pygame.image.load(
             os.path.join(self._cwdpath, "Images", "commandcentert.png")).convert_alpha()
+        self._barracksimg = pygame.image.load(
+            os.path.join(self._cwdpath, "Images", "Barracks.png")).convert_alpha()
 
         # Directional Green Cursor
         self._mouseimg1 = pygame.image.load(os.path.join(self._cwdpath, "Images", "mouse1t.png")).convert_alpha()
@@ -566,7 +574,7 @@ class App():
                 self._input.leftclick = True
                 self._input.leftclickframe = True
                 self._input.mouseclickposition = event.pos
-                self.overlay.buttonHandle(self._display_surf, self._input, self._playerinfo._selectedlist, self._playerinfo._selectedbuildinglist, self._entitylist, self._entityquadtree)
+                self.overlay.buttonHandle(self._display_surf, self._input, self._playerinfo, self._entitylist, self._entityquadtree)
 
             elif event.button == 2: #m
                 pass
