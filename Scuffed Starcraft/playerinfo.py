@@ -21,6 +21,7 @@ class playerinfo():
         self._firstclick = False
         self._firstclickmini = False
         self._aclicked = False
+        self.selectedOverlay = False
 
     def giveresources(self, resource):
         self.resources = self.resources + resource
@@ -28,6 +29,8 @@ class playerinfo():
     def update(self, input, playerunits, map, displaysurf, playerbuildings, enemyunits, unitsquad, enemyunitsquad):
         #handle unit clicking and mouse drag
         worldcoords = map.windowtoworldtransform(input.mouseposition[0],input.mouseposition[1], displaysurf)
+        #Normal Case of not selecting the overlay
+        self.selectedOverlay = False
         if input.aclick:
             self._aclicked = True
             return
@@ -44,15 +47,38 @@ class playerinfo():
                 self._selectionrect[3] = worldcoords[1] - self._selectionrect[1]
                 self._selectionrectrender[2] = input.mouseposition[0] - self._selectionrectrender[0]
                 self._selectionrectrender[3] = input.mouseposition[1] - self._selectionrectrender[1]
+        
+        #Make overlay not change selection
+        if input.mouseclickposition[0] >= 0 and input.mouseclickposition[0] <= displaysurf.get_width():
+            if input.mouseclickposition[1] >= (displaysurf.get_height() - int(displaysurf.get_height() / 3)) and input.mouseclickposition[1] <= displaysurf.get_height():
+                self.selectedOverlay = True
         if input.leftclickletgo and not self._firstclickmini and not self._aclicked:#self._selectionrect[3] != -1
-            #buildings
-            self._selectedbuildinglist.clear()
-            for building in playerbuildings:
-                building.selected = False
-                if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
-                self._selectionrect[3],building.circlecenter[0], building.circlecenter[1],building.radius):
-                    building.selected = True
-                    self._selectedbuildinglist.append(building)
+            #If we select the overlay we dont want to clear either the unit/building selected list
+            if not self.selectedOverlay:
+                self._selectedbuildinglist.clear()
+                #buildings
+                for building in playerbuildings:
+                    building.selected = False
+                    if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
+                    self._selectionrect[3],building.circlecenter[0], building.circlecenter[1],building.radius):
+                        building.selected = True
+                        self._selectedbuildinglist.append(building)
+
+                self._selectedlist.clear()
+                #starttime = time.time_ns()
+                for unit in playerunits:
+                    unit.selected = False
+                    if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
+                    self._selectionrect[3],unit.circlecenter[0], unit.circlecenter[1],unit.radius):
+                        unit.selected = True
+                        self._selectedlist.append(unit)
+                for unit in enemyunits:
+                    unit.selected = False
+                    if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
+                    self._selectionrect[3],unit.circlecenter[0], unit.circlecenter[1],unit.radius):
+                        unit.selected = True
+                        self._selectedlist.append(unit)
+                #print(time.time_ns() - starttime)
             #units
             #starttime = time.time_ns()
             """This is a select loop for the quad tree, but im using the regular list
@@ -75,21 +101,6 @@ class playerinfo():
             for unitz in self._selectedlist:
                 unitz.selected = True
             """
-            self._selectedlist.clear()
-            #starttime = time.time_ns()
-            for unit in playerunits:
-                unit.selected = False
-                if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
-                self._selectionrect[3],unit.circlecenter[0], unit.circlecenter[1],unit.radius):
-                    unit.selected = True
-                    self._selectedlist.append(unit)
-            for unit in enemyunits:
-                unit.selected = False
-                if mathfuncs.mathfuncs.rectcirclecollision(self._selectionrect[0],self._selectionrect[1], self._selectionrect[2],
-                self._selectionrect[3],unit.circlecenter[0], unit.circlecenter[1],unit.radius):
-                    unit.selected = True
-                    self._selectedlist.append(unit)
-            #print(time.time_ns() - starttime)
 
             #reset
             self._firstclick = False

@@ -172,7 +172,7 @@ class Overlay:
                 return
 
             #Selected one building
-            elif len(selectedEntityList) == 0 and len(selectedBuildingList) == 1:
+            elif len(selectedEntityList) >= 0 and len(selectedBuildingList) != 0:
                 #Grab first item in list as the figure-head stat to show
                 classSelected = selectedBuildingList[0].__class__.__name__
 
@@ -210,9 +210,8 @@ class Overlay:
 
         if len(selectedEntityList) == 0 and len(selectedBuildingList) == 1:
             #Grab first item in list as the figure-head stat to show
-            classSelected = selectedBuildingList[0].__class__.__name__
-
-            if classSelected == "CommandCenter":
+            self.classSelected = selectedBuildingList[0]
+            if self.classSelected.__class__.__name__ == "CommandCenter":
                 #Set-up button1
                 if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
                     if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
