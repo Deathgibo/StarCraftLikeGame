@@ -243,7 +243,7 @@ class Overlay:
                     self.buildMarauder_trans = pygame.transform.scale(self.buildMarauder,(26, 26))
                     displaysurf.blit( self.buildMarauder_trans, (672, 467))
 
-    def buttonHandle(self, displaysurf, input, playerInfo, entityList, entityquadtree):
+    def buttonHandle(self, displaysurf, input, playerInfo, entityList, entityquadtree, enemyEntityList, enemyEntityQuadtree):
         #Get building selected
         if len(playerInfo._selectedlist) >= 0 and len(playerInfo._selectedbuildinglist) != 0:
             #Grab first item in list as the figure-head stat to show
@@ -253,20 +253,17 @@ class Overlay:
                 if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
                     if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
                         if input.leftclick == True:
-                            playerInfo._selectedbuildinglist[0].buildWorker(entityList, self.scvsurf, entityquadtree)
-                            playerInfo.givepopulation(1)
+                            playerInfo._selectedbuildinglist[0].buildWorker(entityList, self.scvsurf, entityquadtree, enemyEntityList, enemyEntityQuadtree, playerInfo)
             elif self.classSelected.__class__.__name__ == "Barracks":
                 #Set-up button1 (marine)
                 if input.mouseclickposition[0] >= 643 and input.mouseclickposition[0] <= 669:
                     if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
                         if input.leftclick == True:
-                            playerInfo._selectedbuildinglist[0].buildMarine(entityList, self.marinesurf, entityquadtree)
-                            playerInfo.givepopulation(1)
+                            playerInfo._selectedbuildinglist[0].buildMarine(entityList, self.marinesurf, entityquadtree, enemyEntityList, enemyEntityQuadtree, playerInfo)
                 elif input.mouseclickposition[0] >= 672 and input.mouseclickposition[0] <= 698:
                     if input.mouseclickposition[1] >= 467 and input.mouseclickposition[1] <= 493:
                         if input.leftclick == True:
-                            playerInfo._selectedbuildinglist[0].buildMarauder(entityList, self.maraudersurf, entityquadtree)
-                            playerInfo.givepopulation(1)
+                            playerInfo._selectedbuildinglist[0].buildMarauder(entityList, self.maraudersurf, entityquadtree, enemyEntityList, enemyEntityQuadtree, playerInfo)
 
     def renderTemplate(self, displaysurf):
         # Bottom_Overlay (Height is random - just looks nice)

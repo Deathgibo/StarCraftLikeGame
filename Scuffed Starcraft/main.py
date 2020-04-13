@@ -110,10 +110,16 @@ class App():
 
     def load_buildings(self):
         self._building_list = []
-        building1 = CommandCenter.CommandCenter(900,700,self._commandcenterimg)
-        building2 = Barracks.Barracks(1200, 690, self._barracksimg)
+        #Good Guys
+        building1 = CommandCenter.CommandCenter(900,700,self._commandcenterimg, False)
+        building2 = Barracks.Barracks(1200, 690, self._barracksimg, False)
         self._building_list.append(building1)
         self._building_list.append(building2)
+        #Bad Guys
+        building3 = CommandCenter.CommandCenter(1700,1900,self._commandcenterimg, True)
+        building4 = Barracks.Barracks(1400, 2000, self._barracksimg, True)
+        self._building_list.append(building3)
+        self._building_list.append(building4)
 
     def load_resources(self):
         #minerals
@@ -574,7 +580,7 @@ class App():
                 self._input.leftclick = True
                 self._input.leftclickframe = True
                 self._input.mouseclickposition = event.pos
-                self.overlay.buttonHandle(self._display_surf, self._input, self._playerinfo, self._entitylist, self._entityquadtree)
+                self.overlay.buttonHandle(self._display_surf, self._input, self._playerinfo, self._entitylist, self._entityquadtree, self._enemyentitylist, self._enemyentityquadtree)
 
             elif event.button == 2: #m
                 pass

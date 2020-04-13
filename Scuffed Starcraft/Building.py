@@ -3,16 +3,18 @@ import numpy as np
 import pygame
 
 class Building():
-    def __init__(self, x, y, imgsurf):
+    def __init__(self, x, y, imgsurf, isEnemy):
         #other
         self.buildingunit = False
         self.selected = False
+        self.enemy = isEnemy
         #stats
         self.health = 0
         self.maxhealth = 0
         #map coords
         self.x = x
         self.y = y
+
 
     def update(self, input):
         self.handle_input(input)
