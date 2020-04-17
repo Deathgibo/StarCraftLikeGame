@@ -139,9 +139,9 @@ class App():
 
         #Create units and enemies and set up data structures
         marinerect = pygame.Rect(700,300,45,45)
-        worker1 = Worker.Worker(15,scvsurf,marinerect)
+        worker1 = Worker.Worker(15,scvsurf,marinerect,False)
         marinerect = pygame.Rect(700,350,45,45)
-        worker2 = Worker.Worker(15,scvsurf,marinerect)
+        worker2 = Worker.Worker(15,scvsurf,marinerect, False)
         self._entitylist = []
         self._entitylist.append(worker1)
         self._playerinfo.givepopulation(1)
@@ -151,7 +151,7 @@ class App():
         #Fill entity List structure
         for x in range(0,thesize):
             marinerect = pygame.Rect(100,500 + x*30,50,50)
-            entity1 = Marine.Marine(15,marinesurf,marinerect)
+            entity1 = Marine.Marine(15,marinesurf,marinerect, False)
             self._entitylist.append(entity1)
             self._playerinfo.givepopulation(1)
 
@@ -164,7 +164,7 @@ class App():
         self._enemyentitylist = []
         for x in range(0,thesize):
             marinerect = pygame.Rect(400,250 + x*30,50,50)
-            entity1 = Marauder.Marauder(15,maraudersurf,marinerect)
+            entity1 = Marauder.Marauder(15,maraudersurf,marinerect, True)
             self._enemyentitylist.append(entity1)
 
         #Initialize and fill the enemy QuadTree
@@ -247,7 +247,7 @@ class App():
         starttime = time.time()
         for units in self._entitylist:
             units.update(self._input,self.minerallist, self.map,self._display_surf, self._enemyentitylist, self._entitylist, self._enemyentityquadtree, self._entityquadtree,
-                         self.worldgraph, self._playerinfo)
+                         self.worldgraph, self._playerinfo,self._building_list)
         #print(time.time() - starttime)
         #remove dead units
         count = 0
@@ -260,7 +260,7 @@ class App():
         #enemy units
         for units in self._enemyentitylist:
             units.update(self._input,self.minerallist, self.map,self._display_surf, self._entitylist, self._enemyentitylist, self._entityquadtree, self._enemyentityquadtree,
-                          self.worldgraph, self._playerinfo)
+                          self.worldgraph, self._playerinfo,self._building_list)
 
         #remove dead enemy units
         count = 0
@@ -275,7 +275,13 @@ class App():
         for buildings in self._building_list:
             buildings.update(self._input)
 
-
+        #remove destroyed buildings
+        count = 0
+        for x in range(0,len(self._building_list)):
+            if self._building_list[x - count].alive == False:
+                self._building_list.pop(x - count)
+                count = count + 1
+                
         """
         just here to remember sound syntax
         if not pygame.mixer.music.get_busy():

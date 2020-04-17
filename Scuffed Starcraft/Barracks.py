@@ -12,14 +12,18 @@ class Barracks(Building.Building):
         ysize = 174
         self.rect = pygame.Rect(x - xsize/2,y - ysize/2,xsize,ysize)
         self.img = imgsurf
+        self.healthrectwidth = xsize
+        self.healthrect = np.array([x - xsize/2,y - ysize/2 - 8,xsize, 5])
         #stats
-        self.health = 1000
-        self.maxhealth = 1000
+        self.health = 50  #1000
+        self.maxhealth = 50 #1000
         #physics
         self.circlecenter = np.array([int(x),int(y)])
         self.radius = int(xsize/5)
 
     def update(self, input):
+        if(self.health <= 0):
+            self.alive = False
         self.handle_input(input)
 
     def handle_input(self, input):
@@ -40,7 +44,7 @@ class Barracks(Building.Building):
                 # If we try to place a marine in the same spot of another the game will crash, here we have found an empty spot
                 if spotTaken == False:
                     marinerect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    marine = Marine.Marine(15,marinesurf,marinerect)
+                    marine = Marine.Marine(15,marinesurf,marinerect,self.enemy)
                     entityList.append(marine)
                     entityquadtree.insertstart(marine)  #W/out Node is none error
                     playerInfo.givepopulation(1)
@@ -57,7 +61,7 @@ class Barracks(Building.Building):
                 # If we try to place a worker in the same spot of another the game will crash, here we have found an empty spot
                 if spotTaken == False:
                     marinerect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    marine = Marine.Marine(15,marinesurf,marinerect)
+                    marine = Marine.Marine(15,marinesurf,marinerect,self.enemy)
                     enemyEntityList.append(marine)
                     enemyEntityQuadtree.insertstart(marine)  #W/out Node is none error
                     #Stop looping
@@ -76,7 +80,7 @@ class Barracks(Building.Building):
                 # If we try to place a marine in the same spot of another the game will crash, here we have found an empty spot
                 if spotTaken == False:
                     marauderrect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    marauder = Marauder.Marauder(15,maraudersurf,marauderrect)
+                    marauder = Marauder.Marauder(15,maraudersurf,marauderrect,self.enemy)
                     entityList.append(marauder)
                     entityquadtree.insertstart(marauder)  #W/out Node is none error
                     playerInfo.givepopulation(1)
@@ -93,7 +97,7 @@ class Barracks(Building.Building):
                 # If we try to place a worker in the same spot of another the game will crash, here we have found an empty spot
                 if spotTaken == False:
                     marauderrect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    marauder = Marauder.Marauder(15,maraudersurf,marauderrect)
+                    marauder = Marauder.Marauder(15,maraudersurf,marauderrect,self.enemy)
                     enemyEntityList.append(marauder)
                     enemyEntityQuadtree.insertstart(marauder)  #W/out Node is none error
                     #Stop looping

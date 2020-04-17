@@ -3,8 +3,8 @@ import pygame
 
 class Worker(Entity.Entity):
 
-    def __init__(self, rad,imgsurf, pyrect):
-        super().__init__(rad,imgsurf,pyrect)
+    def __init__(self, rad,imgsurf, pyrect, isEnemy):
+        super().__init__(rad,imgsurf,pyrect, isEnemy)
         self.circlexpercent = .5
         self.circleypercent = .75
         self.Move(0,0)

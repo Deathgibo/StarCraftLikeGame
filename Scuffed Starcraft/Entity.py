@@ -16,7 +16,7 @@ theres certain attributes you need to override like health, attack damage.
 """
 
 class Entity():
-    def __init__(self, rad,imgsurf, pyrect):
+    def __init__(self, rad,imgsurf, pyrect, isEnemy):
         #physics
         self.radius = rad
         self.circlexpercent = .5
@@ -45,18 +45,19 @@ class Entity():
         self.attackspeed = 0
         self.attackspeedcounter = 0
         #combat
+        self.enemy = isEnemy
         self.target = None
         self.followtarget = False
         self.attackmove = False
         self.alive = True
         self.wait = False
 
-    def update(self, input, minerals, mapinfo, displaysurf, enemyunits, units, enemyunitsquad, unitsquad, graph, playerinfo):
+    def update(self, input, minerals, mapinfo, displaysurf, enemyunits, units, enemyunitsquad, unitsquad, graph, playerinfo, buildinglist):
         self.stateglobalupdate(input,self)
         self.state.update(self, playerinfo, enemyunits, units, enemyunitsquad, unitsquad)
         newstate = self.statetrigger(input,self, minerals, mapinfo, displaysurf, enemyunits, enemyunitsquad, unitsquad)
         if newstate == None:
-            newstate = self.state.handle_input(input,self, enemyunits, enemyunitsquad)
+            newstate = self.state.handle_input(input,self, buildinglist, enemyunits, enemyunitsquad)
         if newstate != None:
             self.state = newstate
             self.state.entry(self, graph)
@@ -233,7 +234,7 @@ class Entity():
                 return movestate()
         return None
 
-    def searchenemies(self, enemylist, enemyunitsquad):
+    def searchenemies(self, enemylist, enemyunitsquad, buildinglist):
         #check for enemies in vision range
         enemylist = []
         #starttime = time.time_ns()
@@ -242,6 +243,13 @@ class Entity():
         #print(time.time_ns() - starttime)
         if enemy is not None:
             return enemy
+
+        #check for buildings in range
+        for x in range(0,len(buildinglist)):
+            if buildinglist[x].enemy != self.enemy:
+                if mathfuncs.mathfuncs.circlecirclecollision((buildinglist[x].circlecenter[0],buildinglist[x].circlecenter[1],buildinglist[x].radius),
+                (self.circlecenter[0],self.circlecenter[1],self.visionrange)):
+                    return buildinglist[x]
 
         #starttime = time.time()
         """for enemy in enemylist:
@@ -265,7 +273,7 @@ class entity_state():
     def update(self, unit, playerinfo, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         pass
 
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         #see if enemy is near
         return None
 
@@ -276,6 +284,9 @@ class miningstate(entity_state):
         self.statezero(unit)
     def update(self, unit, playerinfo,  enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         if self.state == 0:
+            self.dir = np.array([unit.mineralpatch.circlecenter[0] - unit.circlecenter[0],unit.mineralpatch.circlecenter[1] - unit.circlecenter[1]])
+            self.dir = self.dir / np.linalg.norm(self.dir)
+
             unit.Move(self.dir[0] * unit.speed,self.dir[1] * unit.speed, enemyunits, units, enemyunitsquad, unitsquad)
             if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius),
             (unit.mineralpatch.circlecenter[0],unit.mineralpatch.circlecenter[1], unit.mineralpatch.radius)):
@@ -292,6 +303,9 @@ class miningstate(entity_state):
             self.collectingcount = self.collectingcount + 1
 
         if self.state == 2:
+            self.dir = np.array([900 - unit.circlecenter[0], 700 - unit.circlecenter[1]]) #closest base coordinates
+            self.dir = self.dir / np.linalg.norm(self.dir)
+
             unit.Move(self.dir[0] * unit.speed,self.dir[1] * unit.speed, enemyunits, units, enemyunitsquad, unitsquad)
             if mathfuncs.mathfuncs.circlecirclecollision((unit.circlecenter[0],unit.circlecenter[1], unit.radius),
             (900,700, 5)):
@@ -303,7 +317,7 @@ class miningstate(entity_state):
                 playerinfo.giveresources(10)
                 self.statezero(unit)
             self.collectingcount = self.collectingcount + 1
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         return None
     def statezero(self, unit):
         self.state = 0
@@ -330,8 +344,8 @@ class idlestate(entity_state):
         pass
     def update(self, unit, playerinfo, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         pass
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
-        enemy = unit.searchenemies(enemyunits, enemyunitsquad)
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
+        enemy = unit.searchenemies(enemyunits, enemyunitsquad, buildinglist)
         if enemy != None:
             unit.target = enemy
             return attackstate()
@@ -374,10 +388,10 @@ class movestate(entity_state):
                 unit.Move(self.physicsinfo[2][0] * unit.speed, self.physicsinfo[2][1] * unit.speed, enemyunits, units, enemyunitsquad, unitsquad) #probably put to none
 
 
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         #if attackmove check for enemies
         if self.attackmove:
-            enemy = unit.searchenemies(enemyunits, enemyunitsquad)
+            enemy = unit.searchenemies(enemyunits, enemyunitsquad, buildinglist)
             if enemy != None:
                 unit.target = enemy
                 return attackstate()
@@ -467,7 +481,7 @@ class attackstate(entity_state):
                 self.attacking = False
             self.attackingcounter =  self.attackingcounter + 1
 
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         #if enemy is dead return to idle
         if unit.target.health <= 0:
             return idlestate()
@@ -542,7 +556,8 @@ class deadstate(entity_state):
     def update(self, unit, playerinfo, enemyunits = None, units = None, enemyunitsquad = None, unitsquad = None):
         #play death animation
         #once done
+        if unit.alive:
+            playerinfo.removepopulation(1)
         unit.alive = False
-        playerinfo.removepopulation(1)
-    def handle_input(self, input, unit, enemyunits = None, enemyunitsquad = None):
+    def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         return None

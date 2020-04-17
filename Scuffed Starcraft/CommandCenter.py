@@ -11,14 +11,18 @@ class CommandCenter(Building.Building):
         ysize = 200
         self.rect = pygame.Rect(x - xsize/2,y - ysize/2,xsize,ysize)
         self.img = imgsurf
+        self.healthrectwidth = xsize
+        self.healthrect = np.array([x - xsize/2,y - ysize/2 - 8,xsize, 5])
         #stats
-        self.health = 1500
-        self.maxhealth = 1500
+        self.health = 500 #1500
+        self.maxhealth = 500 #1500
         #physics
         self.circlecenter = np.array([int(x),int(y)])
         self.radius = int(xsize/5)
 
     def update(self, input):
+        if(self.health <= 0):
+            self.alive = False
         self.handle_input(input)
 
     def handle_input(self, input):
@@ -41,7 +45,7 @@ class CommandCenter(Building.Building):
                 if spotTaken == False:
                     # print(self.x + x, self.y + x)
                     workerrect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    worker1 = Worker.Worker(15,scvsurf,workerrect)
+                    worker1 = Worker.Worker(15,scvsurf,workerrect,self.enemy)
                     #Handle if enemy/user was created
                     entityList.append(worker1)
                     entityquadtree.insertstart(worker1)  #W/out Node is none error
@@ -59,9 +63,9 @@ class CommandCenter(Building.Building):
 
                 if spotTaken == False:
                     workerrect = pygame.Rect(self.x + x,self.y + x,45,45)
-                    worker1 = Worker.Worker(15,scvsurf,workerrect)
+                    worker1 = Worker.Worker(15,scvsurf,workerrect,self.enemy)
                     #Handle if enemy/user was created
                     enemyEntityList.append(worker1)
-                    enemyEntityQuadtree.insertstart(worker1)  #W/out Node is none error      
+                    enemyEntityQuadtree.insertstart(worker1)  #W/out Node is none error
                     #Stop looping
                     return
