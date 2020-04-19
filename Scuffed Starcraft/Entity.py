@@ -557,7 +557,9 @@ class deadstate(entity_state):
         #play death animation
         #once done
         if unit.alive:
-            playerinfo.removepopulation(1)
+            #Only remove population from player's side
+            if not unit.enemy:
+                playerinfo.removepopulation(1)
         unit.alive = False
     def handle_input(self, input, unit, buildinglist, enemyunits = None, enemyunitsquad = None):
         return None
