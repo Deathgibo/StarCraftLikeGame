@@ -25,6 +25,9 @@ class playerinfo():
 
     def giveresources(self, resource):
         self.resources = self.resources + resource
+    
+    def removeresources(self, resource):
+        self.resources = self.resources - resource
 
     def givepopulation(self, population):
         self.population = self.population + population

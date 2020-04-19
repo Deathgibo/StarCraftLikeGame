@@ -34,7 +34,7 @@ class Barracks(Building.Building):
     def buildMarine(self, entityList, marinesurf, entityquadtree, enemyEntityList, enemyEntityQuadtree, playerInfo):
         #Create units and enemies and set up data structures
         # (1,2) = x,y coords on background surface, (3,4) = image size
-        if not self.enemy:
+        if not self.enemy and playerInfo.resources >= 1:
             for x in range(50, 1000, 20):
                 spotTaken = False
                 for entity in entityList:
@@ -48,9 +48,10 @@ class Barracks(Building.Building):
                     entityList.append(marine)
                     entityquadtree.insertstart(marine)  #W/out Node is none error
                     playerInfo.givepopulation(1)
+                    playerInfo.removeresources(1)
                     #Stop looping
                     return
-        else:
+        elif self.enemy:
             #Enemy
             for x in range(50, 1000, 20):
                 spotTaken = False
@@ -70,7 +71,7 @@ class Barracks(Building.Building):
     def buildMarauder(self, entityList, maraudersurf, entityquadtree, enemyEntityList, enemyEntityQuadtree, playerInfo):
         #Create units and enemies and set up data structures
         # (1,2) = x,y coords on background surface, (3,4) = image size
-        if not self.enemy:
+        if not self.enemy and playerInfo.resources >= 2:
             for x in range(50, 1000, 20):
                 spotTaken = False
                 for entity in entityList:
@@ -84,9 +85,10 @@ class Barracks(Building.Building):
                     entityList.append(marauder)
                     entityquadtree.insertstart(marauder)  #W/out Node is none error
                     playerInfo.givepopulation(1)
+                    playerInfo.removeresources(2)
                     #Stop looping
                     return
-        else:
+        elif self.enemy:
             #Enemy
             for x in range(50, 1000, 20):
                 spotTaken = False
