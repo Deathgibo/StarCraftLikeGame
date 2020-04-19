@@ -29,6 +29,7 @@ class App():
         self._display_surf = None       #UI Surface/Foreground/Display Window (800x600)
         self._display_surfrender = None #Background/Map
         self._cwdpath = None            #Get working directory to retrieve images
+        self.bg_music = False
 
     def on_init(self):
         #(from: on_execute)
@@ -93,6 +94,10 @@ class App():
 
         self.clickcount = 0
         self.clickpoints = []
+
+        pygame.mixer.music.load(os.path.join(self._cwdpath, "Sounds", "title_music.wav"))
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
 
     def initpygame(self):
         #(from: on_execute-> on_init)
@@ -201,6 +206,7 @@ class App():
         #update input
         self._input.update()
         self.worldgraph.clicklocationfound = False
+
         #update map and mouse information
         mouseinfo = self.map.handleinput(self._input, self._display_surf,self._mouseimgcurrent, self._mouseimglist, self.worldgraph_editmode)
         self._mouseimgcurrent = self._mouseimglist[mouseinfo[0]]
@@ -281,16 +287,15 @@ class App():
             if self._building_list[x - count].alive == False:
                 self._building_list.pop(x - count)
                 count = count + 1
-                
-        """
-        just here to remember sound syntax
-        if not pygame.mixer.music.get_busy():
-            pygame.mixer.music.load(os.path.join(self._cwdpath,"Sounds","100 on my wrist.wav"))
+
+        # Update Music
+        if not self.bg_music:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(os.path.join(self._cwdpath, "Sounds", "background_music.wav"))
             pygame.mixer.music.set_volume(0.5)
-            pygame.mixer.music.play()
-            self.sound_esketit.set_volume(.05)
-            self.sound_esketit.play();
-        """
+            pygame.mixer.music.play(-1)
+            self.bg_music = True
+
 
     def on_render(self):
         # (from: on_execute)
